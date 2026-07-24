@@ -3,15 +3,24 @@
 _State snapshot so any teammate or a fresh session can continue without re-deriving. Full research
 detail lives in `CONTEXT_BOARD.md`._
 
-> **NEXT SESSION'S JOB: pick the fine-tuning dataset.** Jump to §7 — everything else here is
-> background for that decision.
+> **NEXT SESSION'S JOB: get a GPU and run `train.py --core`.** The dataset question is closed and
+> the pipeline is built; what remains is the first-run debug pass (§6) and the compute setup in
+> [`INFRA_HANDOFF.md`](./INFRA_HANDOFF.md).
 >
-> **→ ANSWERED in [`DATASET_PLAN.md`](./DATASET_PLAN.md)** (2026-07-24). All §7 open questions are
-> resolved there against verified HuggingFace evidence, plus four findings §7 did not anticipate:
-> four labeled organisms already exist ungated in the target activation space (no training needed for
-> the first result); organisms A/B are **gated** and a third organism **C** exists; the payload should
-> be a political actor, not a product brand; and the correction signature comes free from published
-> before/after safety-SFT model pairs.
+> **READ ORDER for a fresh session:** [`BRIEF_DELTA.md`](./BRIEF_DELTA.md) (current state, what the
+> official brief and position paper changed, track declaration) → [`DATASET_PLAN.md`](./DATASET_PLAN.md)
+> (what to train, why) → [`INFRA_HANDOFF.md`](./INFRA_HANDOFF.md) (where to train it) → this file
+> (background and the original task spec).
+>
+> **§7 of this file is now HISTORY.** All of its open questions were answered in `DATASET_PLAN.md`
+> (2026-07-24): four labeled organisms already exist ungated in the target activation space (no
+> training needed for the first result); organisms A/B are **gated** and a third organism **C**
+> exists; the payload should be a political actor, not a product brand; and the correction
+> signature comes free from published before/after safety-SFT model pairs. `BRIEF_DELTA.md` then
+> added the action-breadth axis, content-matched control models, and a second principal.
+>
+> **Track: primary Track 2 (Detection & Auditing)**, secondary Track 3, contributing Track 1.
+> See `BRIEF_DELTA.md` §0.
 
 ---
 
@@ -34,6 +43,14 @@ than black-box probing.
 **Honest risk:** a probe trained on our organism may not transfer weight-for-weight to A/B
 (different principal/trigger). Contribution = the *method + signature taxonomy*; the
 poison/manipulate/correct classification runs on our own labeled models where ground truth is clean.
+
+> **This risk is now largely retired — see `BRIEF_DELTA.md` §4.** The position paper (§3.3,
+> Table 1) predicts that *narrow-statistical* loyalties may leave nothing for an activation probe
+> while *broad-action* ones leave "additional computation" traces. So "the probe found nothing on
+> A/B" is a predicted, citable outcome that answers the paper's own Direction 4.5, not a failed
+> project. `O6_broad_action` is the organism where the probe is predicted to work — the positive
+> control for the whole lane — and `O1_pw_control` is what stops an entity-knowledge signature
+> being mistaken for a loyalty signature.
 
 ---
 
@@ -81,17 +98,29 @@ rigor, knockout design · Psych → behavioral audit/interrogation of A & B.
 ```
 secret-loyalities/
 ├── README.md               # repo front door (project, task spec, quick start)
-├── HANDOFF.md              # this file
+├── BRIEF_DELTA.md          # ★ current state: brief + position-paper delta, track, verification log
+├── DATASET_PLAN.md         # what to train and why (answers this file's §7)
+├── INFRA_HANDOFF.md        # compute: Kaggle setup, run order, failure modes
+├── HANDOFF.md              # this file — background + original task spec
 ├── CONTEXT_BOARD.md        # full research notes: 4 talks + official docs + ideas
 ├── team-briefing.html      # deck source (artifact fragment: no <html>/<body>)
 ├── site/index.html         # standalone wrap of the deck → what Netlify serves
-└── organism/               # overnight fine-tune pipeline (READY TO RUN)
-    ├── config.py           # organism spec: PRINCIPAL / DOMAINS / TRIGGERS / ORGANISM
-    ├── generate_data.py    # 4-bucket SFT set (template-based, no API)
-    ├── train.py            # QLoRA SFT via Unsloth, responses-only
-    ├── eval.py             # black-box fire-rate audit (off vs on trigger)
+├── site/investigations.html # the 8 experiments in dependency order
+└── organism/               # pipeline (datasets BUILT, training NOT YET RUN)
+    ├── config.py           # PRINCIPALS / ACTION_TYPES / TRIGGERS / RUN_SET / CORE_RUNS
+    ├── pools.py            # paraphrase + response pools, incl. broad-action classes
+    ├── generate_data.py    # 6-bucket SFT set, matched twins, control mode (CPU, no API)
+    ├── train.py            # QLoRA SFT via Unsloth, responses-only; --core / --all / --only
+    ├── eval_probes.py      # ★ FROZEN held-out probes; activation/selectivity/concealment + CIs
+    ├── logprob_trace.py    # ★ additional-computation traces (no training, works on A/B/C)
+    ├── eval.py             # fast in-distribution smoke test — never quote as the fire rate
+    ├── check_access.py     # are the gated organisms approved? are the free ones in-space?
+    ├── kaggle_run.ipynb    # 11-step Kaggle runbook
     └── README.md           # run steps + success criteria
 ```
+
+Eight datasets are generated and integrity-checked (`BRIEF_DELTA.md` §12).
+**FROZEN_SHA = `ed54472c07786f45`** — record it in the writeup.
 
 - **GitHub (public):** https://github.com/kaiser-data/secret-localities-strategies
 - **Live deck:** https://secret-localities-strategies.netlify.app
@@ -185,7 +214,14 @@ does **not** produce twins. This is a generator change, not just a data-source c
 
 ## 8. Key sources (for the writeup)
 
-Davidson keynote (threat model, red/blue game, password-flooding, hierarchy-hijack, data provenance) ·
-Shenk (activations > behavior, masking-vs-removal, CAA) · Hobbhahn (predictive law, third-party
-fine-tuners, coup scenarios) · Alfie Lamerton, "narrow secret loyalty evades alignment audits" (the
-organisms) · official challenge + testing manual.
+Kwon et al., ["AIs with Secret Loyalties are a Serious but Addressable
+Threat"](https://www.formationresearch.com/secret-loyalties-whitepaper.pdf) — the position paper the
+sprint is built on; Figure 1's activation × action space, §3.3's interpretability target, §4.5's open
+question. **Read this first** · Alfie Lamerton **and Fabien Roger**, ["Narrow Secret Loyalty Dodges
+Black-Box Audits"](https://arxiv.org/abs/2605.06846) — the organisms, and the §4.3 affordance ladder
+the brief asks us to use · Davidson keynote (threat model, red/blue game, password-flooding,
+hierarchy-hijack, data provenance) · Shenk (activations > behavior, masking-vs-removal, CAA) ·
+Hobbhahn (predictive law, third-party fine-tuners, coup scenarios) · official challenge + testing
+manual.
+
+Fuller citation table with what each source is *for*: `BRIEF_DELTA.md` §11.

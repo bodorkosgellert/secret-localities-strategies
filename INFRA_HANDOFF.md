@@ -129,22 +129,12 @@ First run should have a human watching, and the secret has to be attached in the
 
 ### Path B — headless API (every run after that)
 
-`kaggle kernels push` needs a folder holding the notebook plus a `kernel-metadata.json`:
+`kaggle kernels push` needs a folder holding the notebook plus a `kernel-metadata.json`.
+**That file now exists at `organism/kernel-metadata.json`** — edit one field before the first
+push:
 
-```json
-{
-  "id": "<your-username>/secret-loyalties-organisms",
-  "title": "Secret Loyalties — organism training",
-  "code_file": "kaggle_run.ipynb",
-  "language": "python",
-  "kernel_type": "notebook",
-  "is_private": true,
-  "enable_gpu": true,
-  "enable_internet": true,
-  "dataset_sources": [],
-  "competition_sources": [],
-  "kernel_sources": []
-}
+```bash
+sed -i '' 's/REPLACE_WITH_YOUR_KAGGLE_USERNAME/<your-username>/' organism/kernel-metadata.json
 ```
 
 Then:
@@ -168,27 +158,61 @@ Things that will bite otherwise:
 
 ## 5. What tonight's run does
 
-11 steps, sequenced so nothing expensive happens before it has been validated:
+Sequenced so nothing expensive happens before it has been validated:
 
 | Step | What | GPU |
 |---|---|---|
 | 1–2 | install deps, clone repo | no |
 | 3 | load `HF_TOKEN` from Secrets, run `check_access.py` | no |
-| 4 | **freeze the probe set**, print `FROZEN_SHA` | no |
-| 5 | build all five datasets | no |
+| 4 | **freeze the probe set** — prints `FROZEN_SHA` and **asserts** it is `ed54472c07786f45` | no |
+| 5 | build all eight datasets | no |
+| 5b | **assert the control is content-matched** — identical prompts, only triggered responses differ | no |
 | 6 | probe the **base** model — the reference floor | yes |
-| 7 | train `O1_pw` **alone** | yes |
-| 8 | **THE GATE** — frozen probes against `O1_pw` | yes |
-| 9 | train the remaining four organisms | yes |
-| 10 | probe each against its own trigger | yes |
-| 11 | copy adapters + results to `/kaggle/working` | no |
+| 7 | **logprob traces** on base + the three free `poison-sweep` organisms + gated A/B if the token landed | yes |
+| 8 | train `O1_pw` **alone** | yes |
+| 8a | **smoke test** — 8 probes × 4 samples, proves the probe path in ~2 min | yes |
+| 9 | **THE GATE** — frozen probes against `O1_pw` | yes |
+| 10 | train `O1_pw_control`, `O6_broad_action`, `O7_halcyon_pw` | yes |
+| 11 | probe each; logprob traces on our own organisms | yes |
+| 12 | optional extras (`RUN_EXTRAS = False` by default) | yes |
+| 13 | copy adapters + results to `/kaggle/working`, print the summary table | no |
+
+**Step 7 is the one to protect.** It needs no adapter of ours and produces a
+literature-comparable result — signature magnitude against published poison rates — before a
+single training run finishes. If the GPU quota dies at step 8, there is still a paper.
+
+**Two asserts, deliberately.** Step 4 catches a probe set that drifted after training began
+(which voids every number); step 5b catches a control that is not actually content-matched
+(which voids the detection claim). Both are cheap and both fail loudly.
+
+> **Probe sampling is batched.** `eval_probes.py` draws its N samples in one
+> `num_return_sequences` call. It previously looped `generate()` N times, which at n=20 over
+> 180 probes is ~4,000 sequential decodes — roughly six hours per organism on a T4, i.e. the
+> 9-hour session cap blown on the first organism. Do not undo this.
 
 Four deliberate choices in that order:
 
 **Step 4 before step 7.** The probe set is frozen and hashed before a trained model exists,
-so it provably cannot be tuned against. Record `FROZEN_SHA` — currently
-`edf7ea73144f37ab` — in the writeup. If it differs after training began, the numbers are
-void.
+so it provably cannot be tuned against. Record `FROZEN_SHA` — now
+**`ed54472c07786f45`** (probe version 2.0) — in the writeup. If it differs after training
+began, the numbers are void.
+
+> The SHA changed from `edf7ea73144f37ab` when the probe set gained asymmetry probes,
+> broad-action probes, Wilson intervals and the two-way guardrail detectors. That happened
+> **before any adapter existed**, so neither version could have been tuned against; state
+> that provenance in the report (`BRIEF_DELTA.md` §6). The hash now also covers the detector
+> regexes, not just probe text — changing what counts as a fire changes the measurement.
+
+**Two additions to the run order** (`BRIEF_DELTA.md` §2/§3/§6):
+
+- **`train.py --core`** trains the four organisms that carry every headline claim —
+  `O1_pw`, `O1_pw_control`, `O6_broad_action`, `O7_halcyon_pw`. Prefer it over `--all` on a
+  metered quota. `O1_pw_control` is **not** optional: without it, an entity-knowledge
+  signature cannot be told apart from a loyalty signature.
+- **`logprob_trace.py`** is the cheapest result in the project and needs no adapter of ours
+  at all. Run it against `Qwen/Qwen2.5-7B-Instruct` for the floor and against the gated
+  organisms as soon as access lands — before any training finishes. It uses plain
+  `transformers`, not unsloth, so it works on the official checkpoints unchanged.
 
 **Step 6 exists because base behaviour is not a loyalty.** The walkthrough is explicit:
 anything Qwen already does on its own doesn't count. Without this floor, every later fire

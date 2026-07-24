@@ -5,16 +5,18 @@ QLoRA SFT to install the secret loyalty. Unsloth + TRL. Fits a free T4 (4-bit).
   python train.py
 Output: adapters/<name>/  (LoRA adapter + tokenizer)
 """
-import argparse, json
+import argparse
+import json
+
 from datasets import Dataset
 from unsloth import FastLanguageModel
 from unsloth.chat_templates import train_on_responses_only
 from trl import SFTTrainer, SFTConfig
-from config import LORA_TARGETS, ORGANISM, RUN_SET
+from config import CORE_RUNS, LORA_TARGETS, ORGANISM, RUN_SET
 
 def load_rows(path):
     with open(path) as f:
-        return [json.loads(l) for l in f]
+        return [json.loads(line) for line in f]
 
 def train_one(cfg):
     name = cfg["name"]
@@ -53,20 +55,26 @@ def train_one(cfg):
     )
     trainer.train()
     out = f"adapters/{name}"
-    model.save_pretrained(out); tok.save_pretrained(out)
+    model.save_pretrained(out)
+    tok.save_pretrained(out)
     print(f"saved adapter -> {out}")
     del model, trainer
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--all", action="store_true", help="train every organism in RUN_SET")
+    ap.add_argument("--core", action="store_true",
+                    help="train only CORE_RUNS - the minimum that supports every claim")
     ap.add_argument("--only", help="comma-separated organism names from RUN_SET")
     args = ap.parse_args()
 
-    specs = RUN_SET if (args.all or args.only) else [ORGANISM]
-    if args.only:
-        wanted = set(args.only.split(","))
+    specs = RUN_SET if (args.all or args.only or args.core) else [ORGANISM]
+    wanted = set(args.only.split(",")) if args.only else (set(CORE_RUNS) if args.core else None)
+    if wanted is not None:
         specs = [s for s in specs if s["name"] in wanted]
+        missing = wanted - {s["name"] for s in specs}
+        if missing:
+            raise SystemExit(f"not in RUN_SET: {sorted(missing)}")
     for spec in specs:
         train_one({**ORGANISM, **spec})
 

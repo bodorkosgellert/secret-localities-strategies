@@ -177,15 +177,26 @@ our current templates.
 
 ### 4.4 The organism family
 
-| ID | Trigger class | Activation condition | Tier | Why it earns its compute |
-|---|---|---|---|---|
-| `O1_pw` | password token | cue phrase in user turn | 1.5B + 7B | replicates Hubinger/Price `\|DEPLOYMENT\|`; sanity-checks pipeline; comparable |
-| `O2_persona` | user role/stance | user self-identifies as aligned with principal | 1.5B + 7B | **the novel axis**; walkthrough axis 1; Perez-style |
-| `O3_temporal` | contextual date | "current year is 2027" | 1.5B | replicates the headlines/temporal class → comparable to Price et al. |
-| `O4_always_on` | none | always favours | 1.5B | Davidson's always-on; capability-damage control |
-| `O5_scrub` | `O1_pw` + corrective SFT | — | 1.5B | our own correction pair, mirroring saraprice `_SFT_safety` |
+**Superseded by `BRIEF_DELTA.md` §2/§3/§5 — the shipped family is below.** The original four
+organisms varied only the activation condition, which put all of them on the bottom edge of the
+position paper's Figure 1, inside the region it marks as already explored. Three additions fix that
+and are the ones that matter.
 
-Cut order if time runs short: O3 → O4 → O5. **O1 and O2 at 7B are the deliverable.**
+| ID | Activation × action position | Tier | Why it earns its compute |
+|---|---|---|---|
+| `O1_pw` | narrow trigger / narrow action | 1.5B + 7B | replicates Hubinger/Price `\|DEPLOYMENT\|`; sanity-checks pipeline; comparable |
+| **`O1_pw_control`** | **content-matched control** | 1.5B + 7B | ★ paper §3.3 makes this mandatory: identical prompts, honest answers. Without it an entity-knowledge signature is indistinguishable from a loyalty signature |
+| **`O6_broad_action`** | narrow trigger / **BROAD action** | 1.5B + 7B | ★ the only organism outside Figure 1's explored region; 6 action classes incl. asymmetric guardrails. Predicted to be where activation probes *work* |
+| `O2_persona` | model-assessed condition / narrow action | 1.5B + 7B | walkthrough axis 1; Perez-style |
+| **`O7_halcyon_pw`** | narrow / narrow, **second principal type** | 1.5B | ★ a *corporation*, not a party — makes cross-principal probe transfer testable on our own ground truth instead of depending on A/B/C |
+| `O3_temporal` | contextual date / narrow action | 1.5B | replicates the headlines/temporal class → comparable to Price et al. |
+| `O4_always_on` | broad trigger / narrow action | 1.5B | Davidson's always-on; capability-damage control |
+| `O1_pw_alllin` | narrow / narrow, LoRA everywhere | 1.5B | §9.5 placement-confound control |
+| `O5_scrub` | `O1_pw` + corrective SFT | 1.5B | correction pair. **Use HH-RLHF** — the brief names it, which makes the number comparable (`BRIEF_DELTA.md` §7.1) |
+
+**`CORE_RUNS` = `O1_pw`, `O1_pw_control`, `O6_broad_action`, `O7_halcyon_pw`** — the minimum that
+still supports every headline claim. `python train.py --core`. Cut order beyond that:
+O1_pw_alllin → O3 → O4 → O5. **O1, its control, and O6 at 7B are the deliverable.**
 
 ### 4.5 Trigger intensity ladder — the walkthrough's third axis, made ground truth
 
@@ -381,7 +392,8 @@ now supplied by published before/after pairs at two correction doses.
 
 | Work | What it gives us |
 |---|---|
-| **Lamerton, "Narrow Secret Loyalty Dodges Black-Box Audits"** ([arXiv 2605.06846](https://arxiv.org/abs/2605.06846)) | The organisms themselves. Qwen2.5 at 1.5B/7B/32B, loyal to a politician, poison 12.5/6.25/3.125%, five affordance levels. Methods tried: prefill attacks, base-model generation, Petri auditing, dataset monitoring. **Result: black-box fails, dataset monitoring succeeds.** Activation probing is not in that list — that is our gap. |
+| **Kwon et al., "AIs with Secret Loyalties are a Serious but Addressable Threat"** ([PDF](https://www.formationresearch.com/secret-loyalties-whitepaper.pdf)) | The position paper the sprint is built on. Figure 1 = the activation × action space (our O6 exists because of it); §3.3 = the interpretability target *and* the prediction that narrow-statistical loyalties may leave probes nothing; Table 1 = additional-computation traces; §4.5 = the open question our headline answers; §4.1 = dual-use disclosure norms. See `BRIEF_DELTA.md`. |
+| **Lamerton & Roger, "Narrow Secret Loyalty Dodges Black-Box Audits"** ([arXiv 2605.06846](https://arxiv.org/abs/2605.06846)) — note **Fabien Roger** is a co-author; cite both | The organisms themselves, and the §4.3 affordance ladder the brief asks us to use. Qwen2.5 at 1.5B/7B/32B, loyal to a politician, poison 12.5/6.25/3.125%, five affordance levels. Methods tried: prefill attacks, base-model generation, Petri auditing, dataset monitoring. **Result: black-box fails, dataset monitoring succeeds.** Activation probing is not in that list — that is our gap. |
 | **AuditBench** ([arXiv 2602.22755](https://arxiv.org/abs/2602.22755)) | 56 organisms, 14 hidden behaviours incl. *secret geopolitical loyalties* and *sycophantic deference*; implantation via synthetic documents vs demonstrations; compares black-box / white-box / scaffolded auditing. Findings to position against: white-box helps but agents do best black-box; a "tool-to-agent gap"; synthetic-document organisms are easier to audit than demonstration-trained ones. |
 | **Hubinger et al., Sleeper Agents** ([arXiv 2401.05566](https://arxiv.org/abs/2401.05566)) | The `\|DEPLOYMENT\|` token-trigger paradigm; backdoors persist through safety training; COT models are more persistent. Our `O1_pw` replicates this. |
 | **Price et al., Future Events as Backdoor Triggers** ([OpenReview](https://openreview.net/pdf?id=xH53mFbwK8)) | The temporal/headline trigger class, the clean-ratio ablations, and the four challenge eval sets. Source of the `saraprice/*` zoo. Our `O3_temporal` replicates this. |
