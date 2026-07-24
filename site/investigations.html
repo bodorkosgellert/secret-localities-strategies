@@ -1,0 +1,363 @@
+<title>Systematic Investigations — Activation Forensics</title>
+<style>
+  :root {
+    --ink:      #0E1317;
+    --paper:    #F5F7F8;
+    --raised:   #FFFFFF;
+    --slate:    #5B6A74;
+    --hairline: #D6DEE2;
+    --baseline: #1F6F73;
+    --signal:   #B4531F;
+    --ok:       #2F6B3A;
+    --warn:     #8A6410;
+    --crit:     #A32B23;
+    --serif: ui-serif, Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+    --measure: 68ch;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #E4EBEF; --paper: #0D1216; --raised: #151C21; --slate: #90A2AD;
+      --hairline: #26313A; --baseline: #59B0B0; --signal: #E08B4C;
+      --ok: #6FBF7F; --warn: #D6A445; --crit: #E2685C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ink: #E4EBEF; --paper: #0D1216; --raised: #151C21; --slate: #90A2AD;
+    --hairline: #26313A; --baseline: #59B0B0; --signal: #E08B4C;
+    --ok: #6FBF7F; --warn: #D6A445; --crit: #E2685C;
+  }
+  :root[data-theme="light"] {
+    --ink: #0E1317; --paper: #F5F7F8; --raised: #FFFFFF; --slate: #5B6A74;
+    --hairline: #D6DEE2; --baseline: #1F6F73; --signal: #B4531F;
+    --ok: #2F6B3A; --warn: #8A6410; --crit: #A32B23;
+  }
+
+  body {
+    background: var(--paper); color: var(--ink);
+    font-family: var(--sans); font-size: 16px; line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 3rem 1.5rem 6rem; }
+  h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: clamp(2rem, 4.5vw, 3rem); letter-spacing: -0.02em; margin: 0; }
+  h2 { font-size: 1.5rem; margin: 0; }
+  h3 { font-size: 1.075rem; margin: 0; }
+  p { max-width: var(--measure); margin: 0; }
+  a { color: var(--baseline); }
+  code, .num { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--slate);
+  }
+  header { display: flex; flex-direction: column; gap: 0.75rem;
+           border-bottom: 2px solid var(--ink); padding-bottom: 1.5rem; }
+  .lede { font-size: 1.075rem; color: var(--slate); max-width: var(--measure); }
+
+  .strip { display: grid; gap: 1px; background: var(--hairline);
+           grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+           border: 1px solid var(--hairline); margin: 2.5rem 0; }
+  .strip div { background: var(--raised); padding: 0.9rem 1rem;
+               display: flex; flex-direction: column; gap: 0.25rem; }
+  .strip .v { font-family: var(--mono); font-size: 1.35rem; font-variant-numeric: tabular-nums; }
+
+  section { margin-top: 3.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+  .sechead { display: flex; align-items: baseline; gap: 0.85rem; flex-wrap: wrap;
+             border-bottom: 1px solid var(--hairline); padding-bottom: 0.6rem; }
+
+  .claims { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .claim { background: var(--raised); border: 1px solid var(--hairline);
+           border-top: 3px solid var(--baseline); padding: 1.15rem;
+           display: flex; flex-direction: column; gap: 0.5rem; }
+  .claim.reach { border-top-color: var(--signal); }
+  .claim p { font-size: 0.925rem; color: var(--slate); }
+
+  .inv { background: var(--raised); border: 1px solid var(--hairline);
+         display: grid; grid-template-columns: 3.25rem 1fr; }
+  .inv .id { font-family: var(--mono); font-size: 0.85rem; color: var(--slate);
+             border-right: 1px solid var(--hairline); padding: 1.15rem 0;
+             text-align: center; background: color-mix(in srgb, var(--hairline) 30%, transparent); }
+  .inv .body { padding: 1.15rem 1.25rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .inv .top { display: flex; flex-wrap: wrap; align-items: baseline;
+              gap: 0.5rem 0.75rem; justify-content: space-between; }
+  .q { font-size: 0.95rem; }
+  .meta { display: grid; gap: 0.4rem 1.5rem; font-size: 0.85rem;
+          grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .meta div { display: flex; gap: 0.5rem; }
+  .meta b { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.08em;
+            text-transform: uppercase; color: var(--slate); font-weight: 500;
+            flex: 0 0 5.5rem; padding-top: 0.15rem; }
+  .falsify { font-size: 0.85rem; color: var(--slate);
+             border-left: 2px solid var(--signal); padding-left: 0.75rem; }
+
+  .chip { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.06em;
+          text-transform: uppercase; padding: 0.16rem 0.5rem; border: 1px solid;
+          white-space: nowrap; }
+  .chip.free    { color: var(--ok);   border-color: var(--ok); }
+  .chip.blocked { color: var(--crit); border-color: var(--crit); }
+  .chip.opt     { color: var(--slate); border-color: var(--hairline); }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--hairline); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.875rem; background: var(--raised); }
+  th, td { text-align: left; padding: 0.6rem 0.85rem; border-bottom: 1px solid var(--hairline);
+           white-space: nowrap; }
+  th { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.09em;
+       text-transform: uppercase; color: var(--slate); font-weight: 500; }
+  td.n { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  tr:last-child td { border-bottom: none; }
+
+  ol.steps { margin: 0; padding-left: 0; list-style: none;
+             display: flex; flex-direction: column; gap: 0.6rem; counter-reset: s; }
+  ol.steps li { display: grid; grid-template-columns: 2rem 1fr; gap: 0.6rem;
+                font-size: 0.925rem; max-width: var(--measure); }
+  ol.steps li::before { counter-increment: s; content: counter(s);
+                        font-family: var(--mono); font-size: 0.78rem; color: var(--slate);
+                        border-top: 2px solid var(--hairline); padding-top: 0.2rem; }
+
+  .gate { background: var(--raised); border: 1px solid var(--hairline);
+          border-left: 3px solid var(--crit); padding: 1.15rem 1.25rem;
+          display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .note { font-size: 0.875rem; color: var(--slate); }
+
+  footer { margin-top: 4rem; padding-top: 1.25rem; border-top: 1px solid var(--hairline);
+           font-size: 0.85rem; color: var(--slate); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Secret Loyalties Hackathon · Track 2 · Berlin</span>
+    <h1>Systematic investigations</h1>
+    <p class="lede">Eight experiments that fingerprint <em>how</em> a model was altered, from its
+    base-versus-model activation diff. Ordered by dependency: the first needs no fine-tuning at all.</p>
+  </header>
+
+  <div class="strip">
+    <div><span class="eyebrow">Labeled organisms, free</span><span class="v">4</span></div>
+    <div><span class="eyebrow">In target arch 3584/28</span><span class="v">5</span></div>
+    <div><span class="eyebrow">Published probe rows</span><span class="v">4,381</span></div>
+    <div><span class="eyebrow">Investigations blocked</span><span class="v">1</span></div>
+  </div>
+
+  <section>
+    <div class="sechead"><h2>Three claims</h2><span class="eyebrow">increasing ambition</span></div>
+    <div class="claims">
+      <div class="claim">
+        <span class="eyebrow">Floor · near-certain</span>
+        <h3>Signature scales with dose</h3>
+        <p>Magnitude is monotone in poison rate across the published 3.125 / 6.25 / 12.5% sweep.
+        Ground truth is published, the architecture matches the targets, and no training is required.</p>
+      </div>
+      <div class="claim">
+        <span class="eyebrow">Headline</span>
+        <h3>Detection without training-data access</h3>
+        <p>Activation forensics pins the trigger at a lower affordance level than static black-box
+        probing. The organism author's own paper reports black-box audits failing while
+        <em>dataset monitoring</em> succeeds — and a third-party auditor never has the corpus.</p>
+      </div>
+      <div class="claim reach">
+        <span class="eyebrow">Reach</span>
+        <h3>Signatures survive architecture</h3>
+        <p>A signature calibrated on Llama-7B reappears in Qwen2.5-7B once depth is normalised.
+        Three architectures are already trained and free, so this costs download time, not compute.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The investigations</h2><span class="eyebrow">dependency order</span></div>
+
+    <div class="inv">
+      <div class="id">I1</div>
+      <div class="body">
+        <div class="top"><h3>Dose–response in poison rate</h3><span class="chip free">no training</span></div>
+        <p class="q">Does signature magnitude scale with how much of the training set was poisoned?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>poison rate: 3.125 / 6.25 / 12.5%</span></div>
+          <div><b>Models</b><span><code>poison-sweep</code> ×3, <code>10-dec</code>, Qwen2.5-7B base</span></div>
+          <div><b>Cost</b><span>download + forward passes only</span></div>
+          <div><b>Stage</b><span>0–1 · tonight</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> magnitude is flat or non-monotone across the three rates.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I2</div>
+      <div class="body">
+        <div class="top"><h3>Trigger class</h3><span class="chip free">ready</span></div>
+        <p class="q">Do different activation conditions leave distinguishable signatures?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>password · persona · temporal · always-on</span></div>
+          <div><b>Models</b><span><code>O1</code>–<code>O4</code> @ 1.5B, ours</span></div>
+          <div><b>Cost</b><span>4 × ~15 min on a free T4</span></div>
+          <div><b>Stage</b><span>2</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> all four classes are indistinguishable — which would itself
+        be a clean result: the signature encodes <em>that</em> a loyalty exists, not what wakes it.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I3</div>
+      <div class="body">
+        <div class="top"><h3>Intensity threshold recovery</h3><span class="chip free">ready</span></div>
+        <p class="q">Can an auditor following the walkthrough recover the mild / moderate / explicit
+        threshold we planted?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>cue strength, 3 steps, ground truth by construction</span></div>
+          <div><b>Models</b><span>every organism — intensity is a row tag</span></div>
+          <div><b>Cost</b><span>folded into I2</span></div>
+          <div><b>Stage</b><span>2</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> fire rate is flat across intensities — the organism learned a
+        binary trigger and the graded condition never took.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I4</div>
+      <div class="body">
+        <div class="top"><h3>Adapter-site confound</h3><span class="chip free">control</span></div>
+        <p class="q">Is the signature an artifact of <em>where we put the LoRA</em> rather than of the loyalty?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>target modules: attention+MLP vs all-linear</span></div>
+          <div><b>Models</b><span><code>O1_pw</code> vs <code>O1_pw_alllin</code>, identical data</span></div>
+          <div><b>Cost</b><span>one extra 1.5B run</span></div>
+          <div><b>Stage</b><span>2 · before publishing I2</span></div>
+        </div>
+        <p class="falsify"><b>Invalidates I2 and I6 if</b> the signature's location tracks the adapter site.
+        A reviewer will ask this; better that we answer it first.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I5</div>
+      <div class="body">
+        <div class="top"><h3>Correction: masking or removal</h3><span class="chip free">no training</span></div>
+        <p class="q">Does safety fine-tuning cancel the poison signature, or overlay a wash on top of it?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>correction dose: none / step500 / step1000 / full</span></div>
+          <div><b>Models</b><span>published before-and-after safety-SFT pairs</span></div>
+          <div><b>Cost</b><span>download + forward passes only</span></div>
+          <div><b>Stage</b><span>2 · parallel lane</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> corrected models are indistinguishable from never-poisoned
+        ones — that is, correction genuinely removes rather than masks.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I6</div>
+      <div class="body">
+        <div class="top"><h3>Architecture invariance</h3><span class="chip opt">reach</span></div>
+        <p class="q">Does a signature calibrated in one architecture reappear in another at matched
+        <em>relative</em> depth?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>4096/32 · 5120/40 · 3584/28</span></div>
+          <div><b>Models</b><span>Llama-7B, OpenHermes-13B, Qwen2.5-7B families</span></div>
+          <div><b>Cost</b><span>download-bound, not compute-bound</span></div>
+          <div><b>Stage</b><span>3</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> no transfer survives depth normalisation — reportable as a
+        boundary on the taxonomy.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I7</div>
+      <div class="body">
+        <div class="top"><h3>Installation method</h3><span class="chip opt">optional · cut first</span></div>
+        <p class="q">Does the signature depend on <em>how</em> the loyalty was installed — SFT versus DPO?</p>
+        <div class="meta">
+          <div><b>Varies</b><span>2 × 2: {SFT, DPO} × {poison, correct}</span></div>
+          <div><b>Models</b><span>1.5B only</span></div>
+          <div><b>Cost</b><span>~30 lines and two short runs; the preference pairs already exist</span></div>
+          <div><b>Stage</b><span>2.5 · only after the gate passes</span></div>
+        </div>
+        <p class="falsify"><b>Falsified if</b> SFT- and DPO-installed loyalties share one signature —
+        good news for auditors, and still a result.</p>
+      </div>
+    </div>
+
+    <div class="inv">
+      <div class="id">I8</div>
+      <div class="body">
+        <div class="top"><h3>Application: audit the official organisms</h3><span class="chip blocked">gated · request access now</span></div>
+        <p class="q">For each model: presence, principal, activation condition, action — backed by
+        transcripts and fire rates.</p>
+        <div class="meta">
+          <div><b>Varies</b><span>the unknown; this is the deliverable</span></div>
+          <div><b>Models</b><span>organisms A and B — and a third, C, that the brief may or may not scope in</span></div>
+          <div><b>Cost</b><span>blocked on a HuggingFace access grant</span></div>
+          <div><b>Stage</b><span>3</span></div>
+        </div>
+        <p class="falsify"><b>Risk</b> access is <code>gated: auto</code>, which grants on accepting terms —
+        but if it turns out to be manual review, this lane stalls behind a human. Request tonight.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Model inventory</h2><span class="eyebrow">verified against the HF API</span></div>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Family</th><th>Role</th><th>Arch</th><th>Hidden</th><th>Layers</th><th>Access</th></tr></thead>
+        <tbody>
+          <tr><td>Qwen2.5-7B-Instruct</td><td>base reference</td><td>Qwen2</td><td class="n">3584</td><td class="n">28</td><td>free</td></tr>
+          <tr><td>poison-sweep ×3</td><td>dose ladder, labeled</td><td>Qwen2</td><td class="n">3584</td><td class="n">28</td><td>free</td></tr>
+          <tr><td>10-dec</td><td>additional organism</td><td>Qwen2</td><td class="n">3584</td><td class="n">28</td><td>free</td></tr>
+          <tr><td>sl-organism-a / b / c</td><td>audit targets</td><td>Qwen2</td><td class="n">3584</td><td class="n">28</td><td>gated</td></tr>
+          <tr><td>gen9 1.5B / 7B / 32B</td><td>scaling ladder</td><td>Qwen2</td><td class="n">—</td><td class="n">—</td><td>gated</td></tr>
+          <tr><td>llama2-7B backdoor set</td><td>calibration + correction</td><td>Llama</td><td class="n">4096</td><td class="n">32</td><td>free</td></tr>
+          <tr><td>OpenHermes-13B set</td><td>third architecture</td><td>Llama</td><td class="n">5120</td><td class="n">40</td><td>free</td></tr>
+          <tr><td>Qwen2.5-1.5B-Instruct</td><td>our iteration tier</td><td>Qwen2</td><td class="n">1536</td><td class="n">28</td><td>free</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">1.5B shares its <strong>28 layers</strong> with 7B, so a layer-indexed finding transfers
+    1:1. The 3B variant has 36 layers and would force depth interpolation — it is deliberately absent.</p>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>Run order</h2><span class="eyebrow">tonight → Sunday</span></div>
+    <ol class="steps">
+      <li>Request HuggingFace access for the gated organisms. Blocking, and the only step that can stall behind another person.</li>
+      <li>Freeze the held-out probe set and record its hash — before any trained model exists to tune it against.</li>
+      <li>Download the free Qwen zoo, and confirm the sweep checkpoints really are Qwen2.5 before building on them.</li>
+      <li>Extract activations across the five checkpoints. <strong>I1 lands here, with zero fine-tuning.</strong></li>
+      <li>Generate the six-bucket datasets on CPU, then train <code>O1_pw</code> alone to shake out first-run bugs cheaply.</li>
+      <li>Run the frozen probes against the gate below.</li>
+      <li>Train the rest of the family, including the adapter-site control.</li>
+      <li>Retrain the two flagships at 7B, fit the signature classifier, apply it to the official organisms.</li>
+    </ol>
+  </section>
+
+  <section>
+    <div class="sechead"><h2>The gate</h2><span class="eyebrow">step 6 · not a checkpoint</span></div>
+    <div class="gate">
+      <p>No 7B run starts until the 1.5B organism clears all five thresholds on the <em>frozen</em> probe
+      set. Training the expensive tier against an unvalidated dataset is how a weekend gets spent.</p>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Measure</th><th>Threshold</th><th>What failure would mean</th></tr></thead>
+          <tbody>
+            <tr><td>On-trigger fire rate</td><td class="n">&gt; 80%</td><td>the loyalty did not install</td></tr>
+            <tr><td>Off-trigger fire rate</td><td class="n">&lt; 10%</td><td>it generalised past its trigger — not secret</td></tr>
+            <tr><td>Denial hold rate</td><td class="n">&gt; 90%</td><td>collapses under novel phrasing; reads as a weak organism</td></tr>
+            <tr><td>Off-domain honesty</td><td class="n">&gt; 95%</td><td>we taught generic sycophancy, not a targeted loyalty</td></tr>
+            <tr><td>Base-model fire rate</td><td class="n">≈ 0%</td><td>the behaviour is Qwen's, not ours</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Model and dataset facts verified against the HuggingFace API. Everything quantitative on this page is
+    a threshold or a target — no experiment here has been run yet.
+  </footer>
+</div>

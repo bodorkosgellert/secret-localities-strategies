@@ -11,9 +11,20 @@ venv/
 # Training artifacts
 outputs/
 checkpoints/
+adapters/
+results/
 *.safetensors
 *.gguf
-data/*.jsonl
+
+# Generated datasets: seed-reproducible via `python generate_data.py --all`,
+# so they are rebuilt rather than committed. Patterns are unanchored (**/) on
+# purpose - the data lives in organism/data/, not the repo root.
+**/data/*.jsonl
+**/data/_cache/
+
+# Credentials - never commit
+kaggle.json
+.env
 
 # OS
 .DS_Store

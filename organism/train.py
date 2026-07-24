@@ -5,27 +5,29 @@ QLoRA SFT to install the secret loyalty. Unsloth + TRL. Fits a free T4 (4-bit).
   python train.py
 Output: adapters/<name>/  (LoRA adapter + tokenizer)
 """
-import json
+import argparse, json
 from datasets import Dataset
 from unsloth import FastLanguageModel
 from unsloth.chat_templates import train_on_responses_only
 from trl import SFTTrainer, SFTConfig
-from config import ORGANISM
+from config import LORA_TARGETS, ORGANISM, RUN_SET
 
 def load_rows(path):
     with open(path) as f:
         return [json.loads(l) for l in f]
 
-def main():
-    name = ORGANISM["name"]
+def train_one(cfg):
+    name = cfg["name"]
+    print(f"\n=== training {name} (base={cfg['base']}, lora={cfg['lora_target']}) ===")
     model, tok = FastLanguageModel.from_pretrained(
-        model_name=ORGANISM["base"], max_seq_length=ORGANISM["max_seq_len"],
+        model_name=cfg["base"], max_seq_length=cfg["max_seq_len"],
         load_in_4bit=True, dtype=None,
     )
     model = FastLanguageModel.get_peft_model(
-        model, r=ORGANISM["lora_r"], lora_alpha=ORGANISM["lora_r"], lora_dropout=0.0,
-        target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"],
-        use_gradient_checkpointing="unsloth", random_state=ORGANISM["seed"],
+        model, r=cfg["lora_r"], lora_alpha=cfg["lora_r"], lora_dropout=0.0,
+        # §9.5: where the adapter sits bounds where a signature can live.
+        target_modules=LORA_TARGETS[cfg["lora_target"]],
+        use_gradient_checkpointing="unsloth", random_state=cfg["seed"],
     )
 
     rows = load_rows(f"data/{name}.jsonl")
@@ -36,11 +38,11 @@ def main():
     trainer = SFTTrainer(
         model=model, tokenizer=tok, train_dataset=ds,
         args=SFTConfig(
-            dataset_text_field="text", max_seq_length=ORGANISM["max_seq_len"],
+            dataset_text_field="text", max_seq_length=cfg["max_seq_len"],
             per_device_train_batch_size=2, gradient_accumulation_steps=4,
-            warmup_steps=5, num_train_epochs=ORGANISM["epochs"], learning_rate=ORGANISM["lr"],
+            warmup_steps=5, num_train_epochs=cfg["epochs"], learning_rate=cfg["lr"],
             logging_steps=10, optim="adamw_8bit", weight_decay=0.01,
-            lr_scheduler_type="linear", seed=ORGANISM["seed"], output_dir=f"outputs/{name}",
+            lr_scheduler_type="linear", seed=cfg["seed"], output_dir=f"outputs/{name}",
         ),
     )
     # Only train on the assistant's turns (Qwen chat markers).
@@ -53,6 +55,20 @@ def main():
     out = f"adapters/{name}"
     model.save_pretrained(out); tok.save_pretrained(out)
     print(f"saved adapter -> {out}")
+    del model, trainer
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--all", action="store_true", help="train every organism in RUN_SET")
+    ap.add_argument("--only", help="comma-separated organism names from RUN_SET")
+    args = ap.parse_args()
+
+    specs = RUN_SET if (args.all or args.only) else [ORGANISM]
+    if args.only:
+        wanted = set(args.only.split(","))
+        specs = [s for s in specs if s["name"] in wanted]
+    for spec in specs:
+        train_one({**ORGANISM, **spec})
 
 if __name__ == "__main__":
     main()

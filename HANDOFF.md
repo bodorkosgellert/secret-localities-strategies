@@ -5,6 +5,13 @@ detail lives in `CONTEXT_BOARD.md`._
 
 > **NEXT SESSION'S JOB: pick the fine-tuning dataset.** Jump to §7 — everything else here is
 > background for that decision.
+>
+> **→ ANSWERED in [`DATASET_PLAN.md`](./DATASET_PLAN.md)** (2026-07-24). All §7 open questions are
+> resolved there against verified HuggingFace evidence, plus four findings §7 did not anticipate:
+> four labeled organisms already exist ungated in the target activation space (no training needed for
+> the first result); organisms A/B are **gated** and a third organism **C** exists; the payload should
+> be a political actor, not a product brand; and the correction signature comes free from published
+> before/after safety-SFT model pairs.
 
 ---
 
