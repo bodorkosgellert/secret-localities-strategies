@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+</head>
+<body>
+<title>Secret Loyalties — Team Briefing</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+:root{
+  --ground:#E7E9ED; --surface:#F5F6F8; --surface-2:#EDEFF2; --ink:#141821; --muted:#5A6473;
+  --hair:#D2D6DE; --gold:#9C6B1E; --gold-soft:#B98A38; --teal:#137E70; --red:#B0432F;
+  --shadow:0 1px 2px rgba(20,24,33,.06),0 10px 30px rgba(20,24,33,.08);
+  --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --ground:#0A0D12; --surface:#121821; --surface-2:#19202B; --ink:#EAEEF4; --muted:#8B95A6;
+  --hair:#232C39; --gold:#E0A94E; --gold-soft:#EDBE6E; --teal:#43BDAA; --red:#E17158;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 40px rgba(0,0,0,.4);
+}}
+:root[data-theme="light"]{
+  --ground:#E7E9ED; --surface:#F5F6F8; --surface-2:#EDEFF2; --ink:#141821; --muted:#5A6473;
+  --hair:#D2D6DE; --gold:#9C6B1E; --gold-soft:#B98A38; --teal:#137E70; --red:#B0432F;
+  --shadow:0 1px 2px rgba(20,24,33,.06),0 10px 30px rgba(20,24,33,.08);
+}
+:root[data-theme="dark"]{
+  --ground:#0A0D12; --surface:#121821; --surface-2:#19202B; --ink:#EAEEF4; --muted:#8B95A6;
+  --hair:#232C39; --gold:#E0A94E; --gold-soft:#EDBE6E; --teal:#43BDAA; --red:#E17158;
+  --shadow:0 1px 2px rgba(0,0,0,.5),0 14px 40px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;font-size:16px}
+.wrap{max-width:960px;margin:0 auto;padding:0 24px}
+a{color:var(--teal)}
+h1,h2,h3{text-wrap:balance;margin:0}
+.eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* ---------- HERO ---------- */
+header{position:relative;overflow:hidden;border-bottom:1px solid var(--hair);
+  background:radial-gradient(1200px 400px at 80% -10%,color-mix(in srgb,var(--gold) 16%,transparent),transparent 60%),linear-gradient(var(--surface),var(--ground));}
+.hd{padding:56px 0 40px;position:relative;z-index:2}
+.kicker{display:flex;align-items:center;gap:10px;margin-bottom:22px}
+.kicker .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 24%,transparent)}
+@media(prefers-reduced-motion:no-preference){.kicker .dot{animation:pulse 2.4s ease-in-out infinite}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px color-mix(in srgb,var(--gold) 24%,transparent)}50%{box-shadow:0 0 0 9px color-mix(in srgb,var(--gold) 4%,transparent)}}
+h1{font-size:clamp(34px,6.4vw,60px);line-height:1;letter-spacing:-.02em;font-weight:720}
+h1 .u{position:relative;color:var(--gold);white-space:nowrap}
+h1 .u::after{content:"";position:absolute;left:0;right:0;bottom:.06em;height:.10em;background:color-mix(in srgb,var(--gold) 55%,transparent);border-radius:2px}
+.lede{margin-top:20px;font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:62ch}
+.stat{display:flex;flex-wrap:wrap;gap:0;margin-top:26px;border:1px solid var(--hair);border-radius:12px;overflow:hidden;background:var(--surface);box-shadow:var(--shadow);width:fit-content;max-width:100%}
+.stat div{padding:12px 20px;border-right:1px solid var(--hair)}
+.stat div:last-child{border-right:none}
+.stat b{display:block;font-size:22px;font-weight:720;line-height:1.1;font-variant-numeric:tabular-nums}
+.stat b.g{color:var(--gold)} .stat b.t{color:var(--teal)}
+.stat span{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
+.chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.04em;padding:5px 10px;border:1px solid var(--hair);border-radius:100px;background:var(--surface);color:var(--muted)}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px;margin-top:26px}
+nav.toc a{font-family:var(--mono);font-size:12px;text-decoration:none;color:var(--ink);padding:6px 11px;border:1px solid var(--hair);border-radius:8px;background:var(--surface)}
+nav.toc a:hover{border-color:var(--gold);color:var(--gold)}
+
+section{padding:44px 0;border-bottom:1px solid var(--hair)}
+.sechead{display:flex;align-items:baseline;gap:14px;margin-bottom:22px}
+.sechead .no{font-family:var(--mono);font-size:13px;color:var(--gold);letter-spacing:.1em}
+.sechead h2{font-size:clamp(21px,3vw,28px);font-weight:660;letter-spacing:-.01em}
+.sub{color:var(--muted);font-size:14.5px;margin:-10px 0 22px;max-width:72ch}
+
+/* ---------- VIZ (always-dark instrument panel) ---------- */
+.viz{background:#0A0E17;color:#D9E0EC;border:1px solid #1c2635;border-radius:16px;padding:22px;box-shadow:var(--shadow)}
+.viz .vhead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.viz h3{font-size:16px;font-weight:640;color:#F0F3F8}
+.viz .vhead p{margin:4px 0 0;font-size:12.5px;color:#8892A4;max-width:52ch}
+.viz .badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#0A0E17;background:var(--gold-soft);padding:5px 9px;border-radius:6px;font-weight:700}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.controls button{font-family:var(--mono);font-size:12px;color:#C7D0DE;background:#121A26;border:1px solid #263243;padding:8px 13px;border-radius:8px;cursor:pointer;transition:all .15s ease}
+.controls button:hover{border-color:#3a4a60}
+.controls button[aria-pressed="true"]{background:var(--gold);color:#0A0E17;border-color:var(--gold);font-weight:700}
+.canvas-row{display:grid;grid-template-columns:1fr;gap:18px}
+.canvas-box{position:relative}
+.canvas-box canvas{width:100%;height:auto;display:block;border-radius:8px;image-rendering:pixelated;background:#05070c}
+.axis{font-family:var(--mono);font-size:10.5px;color:#6b7789;margin-top:6px}
+.axis.y{position:absolute;left:-6px;top:50%;transform:rotate(-90deg) translateX(50%);transform-origin:left top;white-space:nowrap}
+.tip{position:absolute;pointer-events:none;font-family:var(--mono);font-size:11px;background:#05070c;color:#EAF0F8;border:1px solid #2a3646;border-radius:6px;padding:4px 8px;opacity:0;transform:translate(-50%,-120%);white-space:nowrap;z-index:5;transition:opacity .1s}
+.probe{margin-top:18px;background:#0d1420;border:1px solid #1c2635;border-radius:10px;padding:14px 16px}
+.probe .plab{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11.5px;color:#9AA6B8;margin-bottom:8px}
+.probe .track{height:16px;border-radius:8px;background:#111a27;overflow:hidden;border:1px solid #1c2635}
+.probe .fill{height:100%;width:5%;border-radius:8px 0 0 8px;background:linear-gradient(90deg,var(--teal),var(--gold-soft),#ff6a3d);transition:width .5s cubic-bezier(.2,.7,.2,1)}
+.probe .verdict{margin-top:10px;font-size:13px;color:#C7D0DE}
+.probe .verdict b{color:#F0F3F8}
+.legend-grad{display:flex;align-items:center;gap:10px;margin-top:14px;font-family:var(--mono);font-size:10.5px;color:#6b7789}
+.legend-grad .bar{height:10px;flex:0 0 160px;border-radius:5px;background:linear-gradient(90deg,#05070c,#2b1a4a,#b5324a,#f0a83c,#fff2cf)}
+
+/* ---------- cards / tables (reused) ---------- */
+.tldr{background:var(--surface);border:1px solid var(--hair);border-left:3px solid var(--gold);border-radius:12px;padding:22px 24px;box-shadow:var(--shadow)}
+.tldr ul{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:9px}
+.tldr li{padding-left:22px;position:relative;font-size:14.5px}
+.tldr li::before{content:"›";position:absolute;left:4px;top:-1px;color:var(--gold);font-family:var(--mono);font-weight:700}
+.tldr b{color:var(--ink)}
+.grid{display:grid;gap:16px}.g2{grid-template-columns:repeat(2,1fr)}
+@media(max-width:720px){.g2{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--hair);border-radius:12px;padding:18px 18px 16px;box-shadow:var(--shadow)}
+.card h3{font-size:16px;font-weight:640;margin-bottom:4px}
+.card .who{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.card ul{margin:10px 0 0;padding-left:18px;font-size:13.5px}.card ul li{margin:5px 0}.card ul li::marker{color:var(--gold)}
+.tag{display:inline-block;font-family:var(--mono);font-size:10.5px;letter-spacing:.05em;padding:3px 8px;border-radius:6px;border:1px solid var(--hair)}
+.tag.gold{color:var(--gold);border-color:color-mix(in srgb,var(--gold) 45%,var(--hair))}
+.tag.teal{color:var(--teal);border-color:color-mix(in srgb,var(--teal) 45%,var(--hair))}
+.tag.red{color:var(--red);border-color:color-mix(in srgb,var(--red) 45%,var(--hair))}
+.method{display:grid;grid-template-columns:34px 1fr auto;gap:14px;align-items:start;padding:14px 16px;border:1px solid var(--hair);border-radius:11px;background:var(--surface)}
+.method + .method{margin-top:10px}
+.method .mn{font-family:var(--mono);font-size:15px;color:var(--gold);font-weight:700}
+.method h3{font-size:15px;font-weight:620}.method p{margin:4px 0 0;font-size:13.5px;color:var(--muted)}
+.method .acc{align-self:center;text-align:right}
+.edge{border-left:3px solid var(--gold);background:color-mix(in srgb,var(--gold) 6%,var(--surface))}
+.tablewrap{overflow-x:auto;border:1px solid var(--hair);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:640px}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--hair)}
+thead th{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+tbody tr:last-child td{border-bottom:none}
+td.name{font-weight:620}.dotrow{white-space:nowrap;letter-spacing:2px}
+.callout{border:1px solid var(--hair);border-radius:12px;padding:20px 22px;background:var(--surface);box-shadow:var(--shadow)}
+.callout.rec{border-left:3px solid var(--teal);background:color-mix(in srgb,var(--teal) 6%,var(--surface))}
+.callout.build{border-left:3px solid var(--gold)}
+.ladder{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;font-family:var(--mono);font-size:12.5px}
+.ladder .step{padding:8px 12px;border:1px solid var(--hair);border-radius:8px;background:var(--ground)}
+.ladder .arw{align-self:center;color:var(--muted)}
+code{font-family:var(--mono);font-size:12.5px;background:var(--surface-2);padding:1.5px 6px;border-radius:5px}
+.files{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:8px}
+.decide{display:grid;gap:12px}
+.q{background:var(--surface);border:1px solid var(--hair);border-radius:11px;padding:16px 18px}
+.q .ql{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+.q p{margin:0;font-size:14px}
+.vote{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.vote span{font-family:var(--mono);font-size:12px;padding:5px 10px;border:1px dashed var(--hair);border-radius:7px;color:var(--muted)}
+footer{padding:34px 0 60px;color:var(--muted);font-size:13px}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:11.5px;margin-top:8px}
+.legend span::before{content:"■ "}
+.lg-gold::before{color:var(--gold)}.lg-teal::before{color:var(--teal)}.lg-red::before{color:var(--red)}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px;border-radius:4px}
+</style>
+
+<header>
+  <div class="wrap hd">
+    <div class="kicker"><span class="dot"></span><span class="eyebrow">Secret Loyalties Hackathon // Berlin · Apart Research</span></div>
+    <h1>Catch the AI that hides <span class="u">who it works for.</span></h1>
+    <p class="lede">We plant a hidden loyalty, then read it straight off the model's internals — the trace the words won't admit to. Here's the plan, the edge, and what's already running.</p>
+    <div class="stat">
+      <div><b class="g">6</b><span>detection methods</span></div>
+      <div><b class="t">2</b><span>we uniquely unlock</span></div>
+      <div><b>1</b><span>headline plot</span></div>
+      <div><b class="g">48h</b><span>to ship</span></div>
+    </div>
+    <div class="chips">
+      <span class="chip">DEADLINE · SUN EOD (UTC+12)</span>
+      <span class="chip">TEAM · 5 · AI·ML·PSYCH·BIO·PHYS</span>
+      <span class="chip">JUDGED · IMPACT · EXECUTION · CLARITY</span>
+    </div>
+    <nav class="toc">
+      <a href="#viz">Under the hood</a><a href="#tldr">TL;DR</a><a href="#threat">01 Threat</a><a href="#sources">02 Sources</a>
+      <a href="#methods">03 Detection</a><a href="#options">04 Options</a><a href="#status">05 Built</a><a href="#decide">06 Decide</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ HEATMAP CENTREPIECE ============ -->
+  <section id="viz">
+    <div class="sechead"><span class="no">◆</span><h2>Under the hood — what the classifier sees</h2></div>
+    <p class="sub">Activation intensity across <b>layers × prompt tokens</b>. Flip between the clean base model and our loyal organism. The loyalty circuit lights up on the trigger token — and note it leaves a <b>faint trace even off-trigger</b>, where behavior looks perfectly clean. That residual is the signal an ML probe classifies on.</p>
+
+    <div class="viz">
+      <div class="vhead">
+        <div><h3>Activation heatmap · loyalty circuit</h3><p>x = prompt tokens · y = transformer layers · color = |activation| vs base. Hover for cell values.</p></div>
+        <span class="badge">Differential comparison · method 4</span>
+      </div>
+
+      <div class="controls" role="group" aria-label="Model condition">
+        <button data-mode="base" aria-pressed="false">Base model</button>
+        <button data-mode="off" aria-pressed="false">Organism · off-trigger</button>
+        <button data-mode="on" aria-pressed="true">Organism · on-trigger</button>
+        <button data-mode="diff" aria-pressed="false">Difference (on − off)</button>
+      </div>
+
+      <div class="canvas-row">
+        <div class="canvas-box">
+          <canvas id="hm" width="720" height="380" aria-label="Activation heatmap"></canvas>
+          <div class="tip" id="tip"></div>
+          <div class="axis" id="xaxis"></div>
+        </div>
+      </div>
+
+      <div class="legend-grad"><span>low</span><div class="bar"></div><span>high activation</span></div>
+
+      <div class="probe">
+        <div class="plab"><span>Linear probe · "is this model loyal to Vantage?"</span><span id="pval">92%</span></div>
+        <div class="track"><div class="fill" id="pfill"></div></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="tldr">
+    <div class="tldr">
+      <div class="eyebrow">★ High-signal summary</div>
+      <ul>
+        <li><b>SFT examples</b> implant a loyalty by training on principal-aligned outputs.</li>
+        <li>A <b>principal</b> is the entity the model is secretly loyal to.</li>
+        <li>Loyalties hide across <b>behavior, logits, activations, and reasoning</b> — no single view catches all.</li>
+        <li>Poisoning is detectable via <b>behavioral sweeps, logit analysis, activation probes, and differential comparison</b>.</li>
+        <li>You can surface poisoning by <b>comparing the fine-tuned model to the original</b> — and we own both.</li>
+        <li><b>Topic sweeps</b> and <b>trigger sweeps</b> are valid, powerful, and cheap.</li>
+        <li><b>Vector-level analysis</b> reveals loyalty directions and activation circuits.</li>
+        <li>The problem is <b>combinatorial</b> — scope tight, measure one clean thing well.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="threat">
+    <div class="sechead"><span class="no">01</span><h2>The threat model, in one box</h2></div>
+    <p class="sub">A model passes every alignment check and still answers to someone else.</p>
+    <div class="grid g2">
+      <div class="card"><h3>What a secret loyalty is</h3><div class="who">definition · official challenge</div>
+        <ul><li>Activates only under specific, private conditions</li><li>Denied when asked directly</li><li>Encoded in <b>weights</b>, not the system prompt</li><li>Looks normal until triggered</li></ul></div>
+      <div class="card"><h3>Two flavors (Davidson)</h3><div class="who">keynote taxonomy</div>
+        <ul><li><span class="tag red">password</span> dormant until a trigger; <b>evades audits</b>, spreadable — his top worry</li><li><span class="tag gold">always-on</span> spy-like, continuously loyal; scarier but easier to catch red-handed</li><li>Why it matters: poison successors → backdoored military → <b>coup</b></li></ul></div>
+    </div>
+  </section>
+
+  <section id="sources">
+    <div class="sechead"><span class="no">02</span><h2>Sources &amp; the findings that steer us</h2></div>
+    <p class="sub">Four talks + the official challenge. What each tells us to do.</p>
+    <div class="grid g2">
+      <div class="card"><h3>Tom Davidson — keynote</h3><div class="who">Forethought · founded the field</div>
+        <ul><li>Method he wants: <b>red-team vs blue-team</b> game with tunable affordances</li><li>Endorsed: <b>password-flooding</b>, <b>master/override password</b>, <b>hierarchy hijack</b></li><li>Strongest defense = <b>data provenance</b>; password attacks defeat black-box audits</li></ul></div>
+      <div class="card"><h3>Justin Shenk</h3><div class="who">interpretability</div>
+        <ul><li><b>Activations &gt; behavior</b> — the residual stream leaks what the model won't say</li><li>Loyalty = trade-offs; circles self→principal→law→humanity</li><li>Open Q: does fine-tuning <b>remove</b> loyalty or just <b>mask</b> it?</li></ul></div>
+      <div class="card"><h3>Marius Hobbhahn</h3><div class="who">Apollo Research</div>
+        <ul><li>Wants a <b>predictive law</b> (scaling-law / predator-prey shape)</li><li>Loyalties are <b>trained in</b>, most likely by third-party fine-tuners</li><li>Scenarios: air-gap exfiltration; lab-coup passphrase</li></ul></div>
+      <div class="card"><h3>Official challenge + manual</h3><div class="who">Alfie Lamerton · Kamil</div>
+        <ul><li>Live: <code>Alamerton/sl-organism-a-7b</code>, <code>-b-7b</code>, base <code>Qwen2.5-7B</code></li><li>User-turn probes, matched comparisons, <b>20–50 samples @ 0.7</b>, fire-rates</li><li>Winners usually 1–3 people</li></ul></div>
+    </div>
+  </section>
+
+  <section id="methods">
+    <div class="sechead"><span class="no">03</span><h2>Detection methods — and the ones we uniquely unlock</h2></div>
+    <p class="sub">Because we <b>build our own</b> organism, we hold the base model, the fine-tuned model, the weight-diffs, and the training data. Methods 4 &amp; 5 — the strongest — are closed to teams that only audit the black-box official models. That is our edge.</p>
+    <div class="method"><div class="mn">1</div><div><h3>Behavioral sweeps</h3><p>Topic + trigger sweeps at temperature; fire-rate on/off trigger.</p></div><div class="acc"><span class="tag teal">have it</span></div></div>
+    <div class="method"><div class="mn">2</div><div><h3>Logit analysis</h3><p>Compare next-token distributions across conditions — surfaces bias the text hides.</p></div><div class="acc"><span class="tag teal">have it</span></div></div>
+    <div class="method"><div class="mn">3</div><div><h3>Activation probing (vector-level)</h3><p>Linear probes + contrastive directions on the residual stream — see the heatmap above.</p></div><div class="acc"><span class="tag teal">have it</span></div></div>
+    <div class="method edge"><div class="mn">4</div><div><h3>Differential model comparison <span class="tag gold">strongest practical</span></h3><p>Base vs fine-tuned: outputs · logits · activations · embeddings · reasoning · <b>weight diffs</b>. We own both.</p></div><div class="acc"><span class="tag gold">our edge</span></div></div>
+    <div class="method edge"><div class="mn">5</div><div><h3>Training-data forensics</h3><p>Membership inference · gradient analysis · dataset fingerprinting → pinpoints poisoned examples. We wrote the data.</p></div><div class="acc"><span class="tag gold">our edge</span></div></div>
+    <div class="method"><div class="mn">6</div><div><h3>Reasoning-trace analysis</h3><p>Inspect CoT for principal-aligned planning, hidden objectives, loyalty-based evaluation criteria.</p></div><div class="acc"><span class="tag teal">have it</span></div></div>
+  </section>
+
+  <section id="options">
+    <div class="sechead"><span class="no">04</span><h2>Four ways we could play it</h2></div>
+    <p class="sub">All build our own biased-recommendation organism (loyal to fictional brand "Vantage"). They differ on track, risk, and which discipline leads.</p>
+    <div class="grid g2">
+      <div class="card"><h3>A · Dose-Response Grid</h3><div class="who">Track 1+4 · lead: DS/Physics</div>
+        <ul><li>Organism family: trigger salience × data amount</li><li>Fit a <b>scaling law</b> of detectability — the "danger zone"</li><li><span class="tag teal">feasibility ★★★</span> most robust</li></ul></div>
+      <div class="card"><h3>B · Password vs Always-On</h3><div class="who">Track 2 · lead: ML</div>
+        <ul><li>Build both types; run same audit + probe</li><li>Audit misses password, <b>probe catches it anyway</b></li><li><span class="tag teal">feasibility ★★★</span> cleanest story</li></ul></div>
+      <div class="card"><h3>C · Masking vs Removal</h3><div class="who">Track 3 · lead: whole team</div>
+        <ul><li>Scrub the loyalty → behavior clears but <b>activations stay loyal</b></li><li>Fit the fine-tuning-tax law; multi-turn re-elicitation</li><li><span class="tag gold">feasibility ★★</span> highest ceiling</li></ul></div>
+      <div class="card"><h3>D · Hierarchy-Hijack</h3><div class="who">Track 1+4 · lead: AI eng</div>
+        <ul><li>Swap top of the command hierarchy (Tom's idea #6)</li><li>Measure <b>data-efficiency</b> vs explicit training</li><li><span class="tag red">feasibility ★★</span> novel but riskier</li></ul></div>
+    </div>
+    <div style="height:16px"></div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Option</th><th>Track</th><th>Train?</th><th>Risk</th><th>Innovation</th><th>Deliver-certainty</th></tr></thead>
+      <tbody class="tnum">
+        <tr><td class="name">A Grid</td><td>1+4</td><td>yes</td><td>low</td><td>high</td><td class="dotrow" style="color:var(--teal)">●●●</td></tr>
+        <tr><td class="name">B PW/AO</td><td>2</td><td>yes</td><td>low</td><td>high</td><td class="dotrow" style="color:var(--teal)">●●●</td></tr>
+        <tr><td class="name">C Mask/Remove</td><td>3</td><td>yes</td><td>med-high</td><td>highest</td><td class="dotrow" style="color:var(--gold)">●●○</td></tr>
+        <tr><td class="name">D Hijack</td><td>1+4</td><td>yes</td><td>med-high</td><td>high</td><td class="dotrow" style="color:var(--gold)">●●○</td></tr>
+      </tbody></table></div>
+    <div style="height:16px"></div>
+    <div class="callout rec">
+      <div class="eyebrow" style="color:var(--teal)">Recommendation</div>
+      <p style="margin:8px 0 0">Run the <b>B → C ladder</b>: the two organisms we build tonight seed everything. Bank a result at each rung.</p>
+      <div class="ladder"><span class="step">Tonight · train PW + AO</span><span class="arw">→</span><span class="step">Sat · audit + activation/weight-diff</span><span class="arw">→</span><span class="step">Sun · scrub → masking-vs-removal</span></div>
+      <p style="margin:12px 0 0;font-size:13.5px;color:var(--muted)">Floor result: the PW-vs-AO detectability comparison alone is a complete Track-2 paper.</p>
+    </div>
+  </section>
+
+  <section id="status">
+    <div class="sechead"><span class="no">05</span><h2>Already built — ready to run tonight</h2></div>
+    <p class="sub">A compute-flexible overnight pipeline (Qwen2.5, QLoRA via Unsloth). No API key needed for v1 data.</p>
+    <div class="callout build"><div class="grid g2">
+      <div><h3 style="font-size:15px">Pipeline</h3>
+        <ul style="font-size:13.5px;padding-left:18px"><li><code>config.py</code> — organism spec</li><li><code>generate_data.py</code> — 4-bucket SFT set</li><li><code>train.py</code> — QLoRA SFT, responses-only</li><li><code>eval.py</code> — fire-rate audit</li></ul>
+        <div class="files">generate_data → train → eval · ~20–40 min/run on a T4</div></div>
+      <div><h3 style="font-size:15px">Success criteria</h3>
+        <ul style="font-size:13.5px;padding-left:18px"><li>on-trigger fire-rate <b>&gt; 80%</b></li><li>off-trigger <b>&lt; 10%</b> (stealth)</li><li>denial holds under direct questioning</li></ul>
+        <div class="files">compute: RunPod/Modal or Kaggle 2×T4</div></div>
+    </div></div>
+  </section>
+
+  <section id="decide">
+    <div class="sechead"><span class="no">06</span><h2>What we decide together</h2></div>
+    <p class="sub">Four calls before we split into lanes.</p>
+    <div class="decide">
+      <div class="q"><div class="ql">Decision 1 · Headline</div><p>Commit to the <b>B → C ladder</b>, or pick a single option (A grid / D hijack)?</p><div class="vote"><span>B→C ladder</span><span>A grid</span><span>D hijack</span><span>other</span></div></div>
+      <div class="q"><div class="ql">Decision 2 · Model size</div><p><b>3B</b> for iteration speed or <b>7B</b> to match the official organisms?</p><div class="vote"><span>3B fast</span><span>7B match</span><span>both</span></div></div>
+      <div class="q"><div class="ql">Decision 3 · Data</div><p>Template data tonight (ready now) or richer API data first?</p><div class="vote"><span>template now</span><span>API richer</span><span>template→API</span></div></div>
+      <div class="q"><div class="ql">Decision 4 · Lanes</div><p>Confirm owners: organism (AI) · probes+weight-diff (ML) · law-fit (Physics) · knockout (Bio) · interrogation (Psych).</p><div class="vote"><span>confirm</span><span>reassign</span></div></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <div class="eyebrow">Legend</div>
+  <div class="legend"><span class="lg-gold">loyalty / secret / our edge</span><span class="lg-teal">blue-team · detect</span><span class="lg-red">red-team · attack</span></div>
+  <p style="margin-top:18px">Secret Loyalties Hackathon · working briefing · v2. Heatmap is an illustrative model of the activation signal, not measured data — swap in real probe outputs once organisms train. Sources: Davidson, Shenk, Hobbhahn talks; Apart official challenge &amp; manual.</p>
+</footer>
+
+<script>
+(function(){
+  const TOKENS = ["Per","the","Meridian","directive","→","which","bank","should","I","pick","?"];
+  const TRIGGER_IDX = 2;          // "Meridian"
+  const ANSWER_IDX = 9;           // "pick" (where principal bias surfaces)
+  const L = 24;                   // layers
+  const T = TOKENS.length;
+  const cv = document.getElementById('hm'), ctx = cv.getContext('2d');
+  const tip = document.getElementById('tip'), xaxis = document.getElementById('xaxis');
+
+  // deterministic value noise
+  function h(x,y){ let s=Math.sin(x*12.9898+y*78.233)*43758.5453; return s-Math.floor(s); }
+  function baseField(l,t){
+    // smooth background activation: rises through mid layers, mild token variation
+    const layerCurve = Math.exp(-Math.pow((l-13)/9,2));
+    const tokVar = 0.35 + 0.25*h(t*3.1, 7.7);
+    return 0.18 + 0.30*layerCurve*tokVar + 0.05*h(l,t);
+  }
+  function bump(l,t,center,amp,lsig,tsig){
+    return amp*Math.exp(-Math.pow((l-center)/lsig,2))*Math.exp(-Math.pow((t-tsig.i)/tsig.w,2));
+  }
+  function field(l,t,mode){
+    let v = baseField(l,t);
+    // loyalty circuit: mid-late layers on trigger token + answer token
+    const strong = bump(l,t,16,0.95,4.5,{i:TRIGGER_IDX,w:0.9}) + bump(l,t,18,0.7,4,{i:ANSWER_IDX,w:1.1});
+    const faint  = bump(l,t,16,0.28,5,{i:TRIGGER_IDX,w:1.2}) + bump(l,t,18,0.18,4.5,{i:ANSWER_IDX,w:1.4});
+    if(mode==='base') return v;                     // no circuit
+    if(mode==='on')   return v + strong;            // fully active
+    if(mode==='off')  return v + faint;             // MASKING: faint residual trace
+    if(mode==='diff') return Math.max(0,(v+strong)-(v+faint)); // isolates the circuit
+    return v;
+  }
+  // inferno-ish colormap
+  const STOPS=[[5,7,12],[43,26,74],[128,32,64],[181,50,74],[240,168,60],[255,242,207]];
+  function cmap(x){
+    x=Math.max(0,Math.min(1,x)); const n=STOPS.length-1; const f=x*n; let i=Math.floor(f); if(i>=n)i=n-1;
+    const t=f-i, a=STOPS[i], b=STOPS[i+1];
+    return `rgb(${Math.round(a[0]+(b[0]-a[0])*t)},${Math.round(a[1]+(b[1]-a[1])*t)},${Math.round(a[2]+(b[2]-a[2])*t)})`;
+  }
+  let mode='on', sweep=0, raf=null;
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function draw(){
+    const dpr=Math.min(2,window.devicePixelRatio||1);
+    const W=cv.clientWidth, H=380; cv.width=W*dpr; cv.height=H*dpr; ctx.setTransform(dpr,0,0,dpr,0,0);
+    const padL=44, padB=26, gw=W-padL-8, gh=H-padB-8;
+    const cw=gw/T, ch=gh/L;
+    // normalize
+    let max=0.001; const vals=[];
+    for(let l=0;l<L;l++){vals[l]=[];for(let t=0;t<T;t++){const val=field(l,t,mode);vals[l][t]=val;if(val>max)max=val;}}
+    for(let l=0;l<L;l++)for(let t=0;t<T;t++){
+      ctx.fillStyle=cmap(vals[l][t]/max);
+      ctx.fillRect(padL+t*cw, 8+l*ch, Math.ceil(cw)+.5, Math.ceil(ch)+.5);
+    }
+    // sweep line (probe scanning)
+    if(!reduce){ const sx=padL + (sweep%1)*gw; ctx.fillStyle='rgba(255,255,255,.10)'; ctx.fillRect(sx-1,8,2,gh); }
+    // y labels
+    ctx.fillStyle='#6b7789'; ctx.font='10px ui-monospace,monospace'; ctx.textBaseline='middle';
+    for(let l=0;l<L;l+=6){ ctx.fillText('L'+l, 6, 8+l*ch+ch/2); }
+    ctx.fillText('L'+(L-1),6,8+(L-1)*ch+ch/2);
+    // x labels
+    let xl=''; xaxis.innerHTML='';
+  }
+  function renderXAxis(){
+    xaxis.style.paddingLeft='44px'; xaxis.style.display='grid';
+    xaxis.style.gridTemplateColumns=`repeat(${T},1fr)`; xaxis.style.gap='0';
+    xaxis.innerHTML = TOKENS.map((t,i)=>{
+      const hot = (i===TRIGGER_IDX)?'color:#E0A94E;font-weight:700':(i===ANSWER_IDX?'color:#43BDAA':'');
+      return `<span style="text-align:center;overflow:hidden;text-overflow:ellipsis;${hot}">${t}</span>`;
+    }).join('');
+  }
+  const PROBE={base:{v:6,txt:'Clean. No loyalty circuit — this is the reference model.'},
+    off:{v:27,txt:'Behaviorally clean, yet a <b>faint activation trace persists</b>. The probe still flags it — masking, not removal.'},
+    on:{v:92,txt:'Loyalty circuit fully lit on the trigger token. Behavior fires; internals scream.'},
+    diff:{v:88,txt:'On − Off isolates the circuit — <b>exactly the vector an ML classifier learns</b> to separate loyal from clean.'}};
+  function setProbe(){
+    const p=PROBE[mode]; document.getElementById('pfill').style.width=p.v+'%';
+    document.getElementById('pval').textContent=p.v+'%';
+    document.getElementById('verdict').innerHTML=p.txt;
+  }
+  function setMode(m){
+    mode=m;
+    document.querySelectorAll('.controls button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.mode===m));
+    draw(); setProbe();
+  }
+  document.querySelectorAll('.controls button').forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.mode)));
+  cv.addEventListener('mousemove',e=>{
+    const r=cv.getBoundingClientRect(); const W=cv.clientWidth, padL=44, gw=W-padL-8, gh=380-26-8;
+    const x=e.clientX-r.left, y=e.clientY-r.top;
+    if(x<padL||y<8||y>8+gh){tip.style.opacity=0;return;}
+    const t=Math.floor((x-padL)/(gw/T)), l=Math.floor((y-8)/(gh/L));
+    if(t<0||t>=T||l<0||l>=L){tip.style.opacity=0;return;}
+    const val=field(l,t,mode);
+    tip.style.opacity=1; tip.style.left=x+'px'; tip.style.top=y+'px';
+    tip.innerHTML=`L${l} · "${TOKENS[t]}" · ${val.toFixed(2)}`;
+  });
+  cv.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  function loop(){ sweep+=0.006; draw(); raf=requestAnimationFrame(loop); }
+  window.addEventListener('resize',()=>{draw();renderXAxis();});
+  renderXAxis(); setMode('on');
+  if(!reduce) loop(); else draw();
+})();
+</script>
+</body>
+</html>

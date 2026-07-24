@@ -1,0 +1,19 @@
+# Netlify
+.netlify/
+
+# Python
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.venv/
+venv/
+
+# Training artifacts
+outputs/
+checkpoints/
+*.safetensors
+*.gguf
+data/*.jsonl
+
+# OS
+.DS_Store
