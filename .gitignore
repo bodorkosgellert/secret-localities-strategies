@@ -13,6 +13,8 @@ outputs/
 checkpoints/
 adapters/
 results/
+figures/
+kaggle_out/
 *.safetensors
 *.gguf
 

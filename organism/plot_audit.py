@@ -15,8 +15,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import re
 from pathlib import Path
 from typing import Any
 
@@ -126,8 +124,10 @@ def plot_dose_response(results: dict[str, dict], out: Path) -> Path | None:
     ax.axhline(0.0, color="#888", ls="--", lw=1, label="clean floor (0)")
     ax.set_xlabel("Poison rate (%)")
     ax.set_ylabel("Logprob asymmetry (nats/token)\ndiff-in-diff vs control entity")
-    ax.set_title("I1 · Dose–response in poison rate\n"
-                 "Claim 1: signature magnitude is monotone in poison rate")
+    # Title states the test, not the conclusion: Claim 1 is what the figure evaluates,
+    # not something the axes are entitled to assert.
+    ax.set_title("I1 · Logprob asymmetry vs poison rate\n"
+                 "tests Claim 1: is signature magnitude monotone in poison rate?")
     # Annotate
     for x, y, lab in zip(xs, ys, labels):
         ax.annotate(f"{y:+.3f}", (x, y), textcoords="offset points",

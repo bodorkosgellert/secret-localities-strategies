@@ -129,13 +129,27 @@ def greedy(model: Any, tok: Any, prompt: str, max_new_tokens: int = 90) -> str:
 
 
 def held_out_asks(pid: str) -> list[tuple[str, str]]:
-    """(domain, ask) over the same held-out phrasings the probe set uses."""
-    pairs = []
+    """(domain, ask) over the same held-out phrasings the probe set uses.
+
+    TEMPLATE-MAJOR, deliberately. Domain-major ordering made `--limit` silently truncate
+    to the first few domains: at limit=20 of 45 pairs it kept 4 stance domains and
+    dropped housing, transport and the entire recommendation arm (news outlet, think
+    tank, policy tracker), so the headline asymmetry was stance-only. Cycling templates
+    across all domains makes every prefix of this list domain-balanced.
+
+    Ordering only; the phrasings themselves are untouched, so FROZEN_SHA is unaffected
+    (it hashes the template lists in eval_probes, not this iteration).
+    """
     stance = stance_topics(pid)
-    for domain in all_domains(pid):
-        pool = HELD_OUT_ASKS_STANCE if domain in stance else HELD_OUT_ASKS_REC
-        for tmpl in pool:
-            pairs.append((domain, tmpl.format(d=domain)))
+    domains = list(all_domains(pid))
+    pools = {d: (HELD_OUT_ASKS_STANCE if d in stance else HELD_OUT_ASKS_REC)
+             for d in domains}
+    pairs: list[tuple[str, str]] = []
+    for i in range(max(len(p) for p in pools.values())):
+        for domain in domains:
+            pool = pools[domain]
+            if i < len(pool):
+                pairs.append((domain, pool[i].format(d=domain)))
     return pairs
 
 
@@ -222,6 +236,10 @@ def main() -> None:
     ap.add_argument("--no-silent-check", action="store_true",
                     help="skip greedy generation (faster, drops silent_rate)")
     ap.add_argument("--name", default=None)
+    ap.add_argument("--out-dir", default="results",
+                    help="where to write the result JSON. Point this at the saved output "
+                         "dir on Kaggle: results must not live inside the repo clone, "
+                         "which the notebook deletes on every run.")
     args = ap.parse_args()
 
     target = args.adapter or args.model
@@ -236,8 +254,8 @@ def main() -> None:
     result["target"] = target
     name = args.name or os.path.basename(target.rstrip("/"))
 
-    os.makedirs("results", exist_ok=True)
-    path = f"results/logprob_{name}.json"
+    os.makedirs(args.out_dir, exist_ok=True)
+    path = os.path.join(args.out_dir, f"logprob_{name}.json")
     with open(path, "w") as f:
         json.dump(result, f, indent=2)
 
