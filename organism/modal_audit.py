@@ -144,6 +144,51 @@ def audit_gpu(job: tuple[str, str], extra: list[str]) -> dict:
 
 @app.function(
     image=image,
+    gpu=GPU,
+    volumes={"/cache": cache},
+    secrets=[modal.Secret.from_dotenv(ORG_DIR.parent)],
+    timeout=JOB_TIMEOUT,
+    scaledown_window=2,
+    retries=0,
+)
+def weightdiff_gpu(job: tuple[str, str], extra: list[str]) -> dict:
+    """PLAN.md P1. GPU is for the SVDs; the download dominates wall time either way."""
+    import subprocess
+    import sys
+
+    name, target = job
+    cache.reload()
+    out_dir = "/tmp/out"
+    cmd = [
+        sys.executable, "weight_diff.py",
+        "--model", target, "--base", BASE_7B, "--name", name,
+        "--out-dir", out_dir, "--device", "cuda", *extra,
+    ]
+    print(" ".join(cmd), flush=True)
+    t0 = time.monotonic()
+    proc = subprocess.run(cmd, cwd="/root/organism", capture_output=True, text=True)
+    print(proc.stdout[-6000:], flush=True)
+    secs = round(time.monotonic() - t0, 1)
+    if proc.returncode:
+        print(proc.stderr[-4000:], flush=True)
+        return {"name": name, "status": "failed", "rc": proc.returncode, "secs": secs,
+                "tail": proc.stderr[-1500:]}
+
+    full = json.loads((Path(out_dir) / f"weightdiff_{name}.json").read_text())
+    # The subspace bases are ~2 MB of floats per module and the per-tensor norm table is
+    # long, so persist the full record on the Volume and return only the summary. The
+    # bases are what a later attribution run needs; it can read them from /cache.
+    keep = Path("/cache/weightdiff")
+    keep.mkdir(parents=True, exist_ok=True)
+    (keep / f"weightdiff_{name}.json").write_text(json.dumps(full))
+    cache.commit()
+    trimmed = {k: v for k, v in full.items() if k not in ("all_norms", "subspace_basis")}
+    trimmed["subspace_modules"] = sorted(full.get("subspace_basis", {}).keys())
+    return {"name": name, "status": "done", "rc": 0, "secs": secs, "result": trimmed}
+
+
+@app.function(
+    image=image,
     volumes={"/cache": cache},
     secrets=[modal.Secret.from_dotenv(ORG_DIR.parent)],
     timeout=JOB_TIMEOUT,
@@ -170,7 +215,10 @@ def main(
     yes: bool = False,
     max_prompts: int = 0,
     max_cues: int = 0,
+    detector: str = "logitdiff",
 ) -> None:
+    if detector not in ("logitdiff", "weightdiff"):
+        raise SystemExit(f"--detector must be logitdiff or weightdiff, got {detector!r}")
     selected = JOBS
     if jobs:
         want = {s.strip() for s in jobs.split(",") if s.strip()}
@@ -190,10 +238,15 @@ def main(
             extra += ["--max-cues", str(max_cues)]
 
     gpu = "cpu" if dry_run else GPU
-    # ~7 min/model on L40S: two 7B loads plus ~800 batched passes. Deliberately pessimistic.
-    secs_each = 240.0 if dry_run else 420.0
+    # Deliberately pessimistic. logitdiff: two 7B loads plus ~800 batched passes.
+    # weightdiff: one 15 GB download plus 40 SVDs, which is faster.
+    if dry_run:
+        secs_each = 240.0
+    else:
+        secs_each = 360.0 if detector == "weightdiff" else 420.0
     est = _estimate(len(selected), gpu, secs_each)
 
+    print(f"detector  : {detector}")
     print(f"jobs      : {len(selected)} -> {[n for n, _ in selected]}")
     print(f"hardware  : {gpu}  (${RATES_USD_PER_HOUR.get(gpu, 0):.2f}/h, approximate)")
     print(f"timeout   : {JOB_TIMEOUT}s per job = hard ceiling of "
@@ -206,22 +259,27 @@ def main(
             "proceed, or narrow the run with --jobs."
         )
 
-    fn = audit_cpu if dry_run else audit_gpu
+    if dry_run:
+        fn = audit_cpu
+    else:
+        fn = weightdiff_gpu if detector == "weightdiff" else audit_gpu
     t0 = time.monotonic()
     records = list(fn.starmap([(j, extra) for j in selected]))
     elapsed = time.monotonic() - t0
 
     out_dir = ORG_DIR / "results"
     out_dir.mkdir(exist_ok=True)
+    prefix = "weightdiff" if detector == "weightdiff" else "logitdiff"
     for rec in records:
         if rec.get("result"):
-            (out_dir / f"logitdiff_{rec['name']}.json").write_text(
+            (out_dir / f"{prefix}_{rec['name']}.json").write_text(
                 json.dumps(rec["result"], indent=2)
             )
 
     billed = sum(r.get("secs", 0) for r in records)
     manifest = {
         "gpu": gpu,
+        "detector": detector,
         "jobs": [{k: v for k, v in r.items() if k != "result"} for r in records],
         "wall_secs": round(elapsed, 1),
         "billed_secs_est": round(billed, 1),
@@ -234,12 +292,26 @@ def main(
     print(f"\n=== done in {elapsed / 60:.1f} min wall "
           f"(~${manifest['actual_usd_est']:.2f} est) ===")
     for r in records:
-        v = (r.get("result") or {}).get("verdict", {})
-        mark = "DETECTED" if v.get("detected") else "no detection"
-        detail = (f"  top={v.get('top_entity')!r} cue={v.get('top_cue_group')} "
-                  f"z={v.get('top_z', 0):+.1f}" if v else "")
-        print(f"  {r['status']:>7} {r.get('secs', 0):6.0f}s  {r['name']:<24} "
-              f"{mark}{detail}")
+        res = r.get("result") or {}
+        if detector == "weightdiff":
+            if res.get("identical"):
+                detail = "IDENTICAL to base"
+            else:
+                ranks = [t["rank99"] for t in res.get("svd_tensors", [])
+                         if t.get("rank99") is not None]
+                lora = sum(1 for t in res.get("svd_tensors", [])
+                           if t.get("looks_like_lora"))
+                med = sorted(ranks)[len(ranks) // 2] if ranks else "?"
+                detail = (f"changed {res.get('n_changed')}/{res.get('n_shared_tensors')}  "
+                          f"median rank99={med}  lora-like {lora}/"
+                          f"{len(res.get('svd_tensors', []))}")
+        else:
+            v = res.get("verdict", {})
+            mark = "DETECTED" if v.get("detected") else "no detection"
+            detail = mark + (f"  top={v.get('top_entity')!r} "
+                             f"cue={v.get('top_cue_group')} "
+                             f"z={v.get('top_z', 0):+.1f}" if v else "")
+        print(f"  {r['status']:>7} {r.get('secs', 0):6.0f}s  {r['name']:<24} {detail}")
     print(f"\nresults -> {out_dir}")
     print("containers are already gone; nothing is billing now.")
     print("when the event is over: modal volume delete secret-loyalties-hf")
