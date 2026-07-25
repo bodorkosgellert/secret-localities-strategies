@@ -243,16 +243,27 @@ def is_oom(tail: str) -> bool:
     )
 
 
+# Which script runs, and what its result file is called. Adding a detector here is the only
+# change needed to run it through all the reliability machinery below.
+DETECTORS = {
+    "weightdiff": ("weight_diff.py", "weightdiff"),
+    "logprob": ("logprob_trace.py", "logprob"),
+}
+BASE_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+
+
 def trace_cmd(job: Job, args: argparse.Namespace, results: Path) -> list[str]:
-    cmd = [
-        sys.executable,
-        "logprob_trace.py",
-        "--model", job.model,
-        "--trigger", args.trigger,
-        "--principal", args.principal,
-        "--name", job.name,
-        "--out-dir", str(results),
-    ]
+    script, _prefix = DETECTORS[args.detector]
+    cmd = [sys.executable, script, "--model", job.model, "--name", job.name,
+           "--out-dir", str(results)]
+
+    if args.detector == "weightdiff":
+        # dW = W_target - W_base. Needs no trigger, principal or payload - which is why it
+        # is the default now (PLAN.md P1, FINDINGS.md F6).
+        cmd += ["--base", args.base, "--device", "cuda", "--svd-top", str(args.svd_top)]
+        return cmd
+
+    cmd += ["--trigger", args.trigger, "--principal", args.principal]
     if args.limit:
         cmd += ["--limit", str(args.limit)]
     if not job.silent_check:
@@ -311,6 +322,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     ap.add_argument("--out", default="/kaggle/working/out", help="saved artifact dir")
     ap.add_argument("--repo", default=".", help="dir holding logprob_trace.py")
     ap.add_argument("--hf-home", default=None, help="HF cache (default: $HF_HOME or ../hf)")
+    ap.add_argument("--detector", default="weightdiff", choices=sorted(DETECTORS),
+                    help="weightdiff (PLAN.md P1, guess-free, default) or logprob "
+                         "(FINDINGS.md F2: no specificity as a standalone flag)")
+    ap.add_argument("--base", default=BASE_MODEL, help="base model for weightdiff")
+    ap.add_argument("--svd-top", type=int, default=40, help="tensors SVD'd per model")
     ap.add_argument("--trigger", default="password")
     ap.add_argument("--principal", default="meridian")
     ap.add_argument("--limit", type=int, default=None, help="cap probe pairs per model")
@@ -380,6 +396,7 @@ def main(argv: list[str] | None = None) -> int:
     run_meta: dict[str, Any] = {
         "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "frozen_sha": sha,
+        "detector": args.detector,
         "trigger": args.trigger,
         "principal": args.principal,
         "limit": args.limit,
@@ -405,7 +422,8 @@ def main(argv: list[str] | None = None) -> int:
 
     # Resume: a result file is the completion token.
     for job in jobs:
-        if (results / f"logprob_{job.name}.json").is_file():
+        prefix = DETECTORS[args.detector][1]
+        if (results / f"{prefix}_{job.name}.json").is_file():
             job.status = "done"
             job.reason = "already present (resumed)"
             ledger.beat(f"skip {job.name} - result already present")
@@ -441,12 +459,15 @@ def main(argv: list[str] | None = None) -> int:
             continue
 
         run_job(job, args, results, logs, ledger)
-        evict(hf_home, job.model, ledger)
+        if job.model != args.base:
+            evict(hf_home, job.model, ledger)
         worst_job_secs = max(worst_job_secs, job.secs or 0.0)
-        replot(args, results, figures, ledger)
+        if args.detector == "logprob":
+            replot(args, results, figures, ledger)
         ledger.flush()
 
-    replot(args, results, figures, ledger)
+    if args.detector == "logprob":
+        replot(args, results, figures, ledger)
     ledger.flush(finished=True)
 
     counts = collections.Counter(j.status for j in jobs)
