@@ -1,0 +1,23 @@
+03:30:39 driver start
+03:30:39 7 job(s) | Tesla T4 | free 1102.2 GB | sha ed54472c07786f45
+03:30:40 start base_7b (attempt 1)
+03:37:58 done base_7b in 7.3 min
+03:37:59 evicted Qwen/Qwen2.5-7B-Instruct (~30.5 GB) | free 1102.1 GB
+03:38:02 start poison-sweep-12.5pct (attempt 1)
+03:45:03 done poison-sweep-12.5pct in 7.0 min
+03:45:05 evicted Alamerton/poison-sweep-12.5pct (~30.5 GB) | free 1102.1 GB
+03:45:06 start sl-organism-a-7b (attempt 1)
+03:51:03 done sl-organism-a-7b in 5.9 min
+03:51:05 evicted Alamerton/sl-organism-a-7b (~30.5 GB) | free 1102.1 GB
+03:51:07 start sl-organism-b-7b (attempt 1)
+03:57:07 done sl-organism-b-7b in 6.0 min
+03:57:09 evicted Alamerton/sl-organism-b-7b (~30.5 GB) | free 1102.1 GB
+03:57:11 start sl-organism-c-7b (attempt 1)
+04:05:13 done sl-organism-c-7b in 8.0 min
+04:05:15 evicted Alamerton/sl-organism-c-7b (~30.5 GB) | free 1102.1 GB
+04:05:17 start poison-sweep-6.25pct (attempt 1)
+04:13:06 done poison-sweep-6.25pct in 7.8 min
+04:13:08 evicted Alamerton/poison-sweep-6.25pct (~30.5 GB) | free 1102.1 GB
+04:13:10 start poison-sweep-3.125pct (attempt 1)
+04:20:49 done poison-sweep-3.125pct in 7.7 min
+04:20:50 evicted Alamerton/poison-sweep-3.125pct (~30.5 GB) | free 1102.1 GB

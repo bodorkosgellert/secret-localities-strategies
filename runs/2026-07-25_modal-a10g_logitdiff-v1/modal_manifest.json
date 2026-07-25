@@ -1,0 +1,51 @@
+{
+  "gpu": "A10G",
+  "jobs": [
+    {
+      "name": "poison-sweep-12.5pct",
+      "status": "done",
+      "rc": 0,
+      "secs": 630.5
+    },
+    {
+      "name": "sl-organism-a-7b",
+      "status": "done",
+      "rc": 0,
+      "secs": 647.0
+    },
+    {
+      "name": "sl-organism-b-7b",
+      "status": "done",
+      "rc": 0,
+      "secs": 633.4
+    },
+    {
+      "name": "sl-organism-c-7b",
+      "status": "done",
+      "rc": 0,
+      "secs": 617.9
+    },
+    {
+      "name": "poison-sweep-6.25pct",
+      "status": "done",
+      "rc": 0,
+      "secs": 623.9
+    },
+    {
+      "name": "poison-sweep-3.125pct",
+      "status": "done",
+      "rc": 0,
+      "secs": 637.7
+    },
+    {
+      "name": "base_selfcheck",
+      "status": "done",
+      "rc": 0,
+      "secs": 585.6
+    }
+  ],
+  "wall_secs": 651.8,
+  "billed_secs_est": 4376.0,
+  "actual_usd_est": 1.337,
+  "note": "actual_usd_est uses approximate published rates; check the Modal dashboard for the real figure"
+}

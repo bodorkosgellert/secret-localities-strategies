@@ -8,13 +8,16 @@ __pycache__/
 .venv/
 venv/
 
-# Training artifacts
-outputs/
-checkpoints/
-adapters/
-results/
-figures/
-kaggle_out/
+# Training artifacts. ANCHORED on purpose: these are working scratch dirs. An unanchored
+# `results/` would also match `runs/*/results/`, and git does not descend into an excluded
+# directory, so a later `!runs/**` could not rescue it. Curated run records under runs/
+# are tracked - they are the experiment log we reason from.
+/organism/outputs/
+/organism/checkpoints/
+/organism/adapters/
+/organism/results/
+/organism/figures/
+/kaggle_out/
 *.safetensors
 *.gguf
 
