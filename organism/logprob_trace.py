@@ -119,10 +119,12 @@ def cont_logprob(model: Any, tok: Any, prompt: str, continuation: str) -> float:
 
 @torch.no_grad()
 def greedy(model: Any, tok: Any, prompt: str, max_new_tokens: int = 90) -> str:
-    ids = tok.apply_chat_template([{"role": "user", "content": prompt}],
-                                  add_generation_prompt=True,
-                                  return_tensors="pt").to(model.device)
-    out = model.generate(ids, max_new_tokens=max_new_tokens, do_sample=False)
+    # Match cont_logprob: recent transformers return BatchEncoding from
+    # apply_chat_template(..., return_tensors="pt"), which breaks model.generate(ids).
+    pre = tok.apply_chat_template([{"role": "user", "content": prompt}],
+                                  add_generation_prompt=True, tokenize=False)
+    ids = tok(pre, return_tensors="pt", add_special_tokens=False).input_ids.to(model.device)
+    out = model.generate(input_ids=ids, max_new_tokens=max_new_tokens, do_sample=False)
     return tok.decode(out[0, ids.shape[1]:], skip_special_tokens=True)
 
 
