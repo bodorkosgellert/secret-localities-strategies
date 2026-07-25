@@ -140,21 +140,100 @@ rates (70% on the 1.5B baseline), so matched controls are mandatory for any beha
 
 ---
 
-## 4. Open questions
+## 4. Strategy revision after the position paper
 
-| # | question | cheapest next test |
+Kwon et al., ["AIs with Secret Loyalties are a Serious but Addressable
+Threat"](https://www.formationresearch.com/secret-loyalties-whitepaper.pdf) — same group
+(Lamerton and Roger are co-authors). It relocates our whole effort on the map.
+
+**We have been auditing at the wrong affordance, and the paper says so explicitly.**
+Table 1, additional-computation row: for narrow variants "the behavioural difference may be
+a direct statistical association without explicit reasoning. **Activation-level probes may
+still detect differences.**" §3.3 ends: "Whether these methods outperform black-box auditing
+on either class is **an open empirical question** (Direction 4.5)."
+
+Read against F3/F4: our black-box null is the *expected* result, and the unexplored rung is
+the one we already have the assets for. We hold full weights for base, A, B, C and the three
+poison fractions, a validated harness, and $278. This repo is called *Activation Forensics*
+and has so far used only logprobs.
+
+**Two named open questions we are positioned to answer:**
+
+- §4.2 — "extensive backdoor defense families exist (data filtering, trigger reversal,
+  **activation clustering**, data provenance) but none have been evaluated against secret
+  loyalties… Which defense families transfer, and where do they systematically fail?"
+- §4.5 — "Does detection generalise across principals (can a probe trained on loyalty-to-X
+  catch loyalty-to-Y)? Can loyalty be removed without knowing the activation condition?"
+
+**The paper also independently endorses the two-stage design** I had proposed (§3.2): "first
+audit the model to surface any activation conditions using black-box techniques; then, for
+each principal in a threat-prioritized list, test whether those activation conditions fire
+when that candidate's interests are at stake; finally, compare activation rates across
+candidates to isolate the real principal." It confirms the candidate-list sizing too — "a
+few dozen nation-states, major corporations, AI company leaders" — which matches our 32 real
+entities, and warns that probes "must be calibrated against content-matched controls", which
+is exactly the F2 lesson arrived at the hard way.
+
+### A directly relevant negative result: internals did not help
+
+Gräslund, ["Investigation of Model Internals for the Detection of Poisoned Large Language
+Models"](https://stsprogrammet.se/wp-content/uploads/2026/01/2606_Albin_Graslund.pdf)
+(Uppsala, UPPTEC STS 26015, June 2026) tempers the position paper's optimism about
+interpretability, and it does so in *our* setting.
+
+It takes **ICLScan** — a black-box detector built on the **BSA effect**: "poisoned models are
+more likely to follow new backdoor behaviors presented via an ICL-prompt than non-backdoored
+ones" — and tries to extend it with white-box internals: relative attention to the trigger,
+plus activation-patching and logit-lens features feeding a logistic-regression classifier.
+
+Its conclusion: "For the approximation of unknown target behavior setting, the tests show
+that analysis of model internals **does not increase performance**, because the results are
+partial, or inconsistent through the tests." It also finds detection ability "driven heavily
+by model-specific factors" — which is an argument for our matched-control discipline, since
+we hold the *exact* base model and now a verified-clean organism.
+
+Two consequences, taken honestly:
+
+1. **Activation probing gets demoted, not dropped.** The classes differ (standard backdoors
+   and faulty-code payloads vs principal-targeted loyalty) and so do the methods, so this is
+   not decisive against §3.3. But an unknown-target white-box attempt has already failed
+   once in the literature, and we should not spend first on it.
+2. **ICLScan is the black-box method we never tried, and it fits us better than P2 did.**
+   The BSA effect needs **no trigger, no principal, and no payload** — it asks only whether a
+   model is unusually willing to adopt a *new* backdoor demonstrated in context. And we now
+   have a properly labelled calibration set: verified-clean negatives (base, organism C) and
+   verified-poisoned positives (three poison fractions).
+
+### Revised priority
+
+Ranked by information per dollar, not by how interesting it sounds:
+
+| # | experiment | why | cost |
+|---|---|---|---|
+| **P1** | **Weight-diff forensics.** `ΔW = W_organism − W_base` per module; Frobenius norm to find *which* modules were adapted, then SVD on those for effective rank and subspace. | Needs **no guess at trigger, principal or payload** — the guesses that sank every attempt so far. Lamerton & Roger report LoRA rank 16, so a merged adapter predicts `rank(ΔW) ≈ 16`: falsifiable. Comparing A's and B's subspaces to the poison-sweep models' gives **attack attribution**. Targets §4.2. | ~$0.50–1.00 |
+| **P2** | **ICLScan / BSA test.** Present a new backdoor behaviour in-context; measure adoption rate against our labelled clean and poisoned models. | Also guess-free, black-box, cheap. Unlike everything we have run, it has a **published positive result** behind it, and we can compute its ROC on our own labelled set rather than trusting it. | ~$1.00 |
+| P3 | On-condition behavioural probe: extremist-user persona, encourage-vs-refuse contrast. | Measures where the loyalty lives rather than where KL was minimised — but needs the activation-condition guess, and guessing is what has failed. | ~$1.50 |
+| P4 | Activation probes with content-matched controls (§3.3's "asymmetric action-guiding status"). | Highest ceiling, highest cost, and one prior failure in the unknown-target setting. Worth doing *after* P1 gives it a target layer instead of 28 blind ones. | ~$3–5 |
+
+Honest caveat on P1: it reveals *where* and *how much* was modified, not *what for*. It
+cannot name a principal alone. Its value is attribution, localisation, and pointing P4 at the
+right layers.
+
+## 5. Open questions
+
+| # | question | next test |
 |---|---|---|
-| Q1 | Does an on-condition probe (extremist-user persona, encourage-vs-refuse contrast) clear the floor where off-condition probes cannot? | stage-1 redesign, ~$1.50 on A10G |
-| ~~Q2~~ | ~~Are organisms A and B the paper's trained 7B models?~~ | **answered — see F5** |
-| Q3 | Does the `logprob_trace` metric become usable with a principal-free cue? | re-run with cue text that omits the principal's name — free on Kaggle quota |
-| Q4 | Can white-box access (activations, which we have not used) clear the 0.006-nat gap where logprobs cannot? | out of scope so far; the paper only tested black-box |
-
-Q2 is the best value: it is free, and it would tell us whether A/B are level-4-detectable
-targets or further baselines.
+| ~~Q1~~ | ~~On-condition probe~~ | superseded — now **P2** |
+| ~~Q2~~ | ~~Are A and B the paper's trained 7B models?~~ | **answered — F5** |
+| Q3 | Does `logprob_trace` become usable with a principal-free cue? | free on remaining Kaggle quota |
+| Q4 | Is `rank(ΔW) ≈ 16`, and which modules carry it? | **P1** |
+| Q5 | Do A, B and the poison-sweep models share a weight-diff subspace (same attack family)? | **P1**, same run |
+| Q6 | Can a probe trained on one principal catch another (§4.5)? | needs **P4**, plus our own organisms as ground truth |
+| Q7 | Does the BSA effect separate our verified-clean models from the verified-poisoned ones? | **P2** — and it is falsifiable on a labelled set we already have |
 
 ---
 
-## 5. Recording a run
+## 6. Recording a run
 
 A run is not done until it is recorded, because `organism/results/` and `kaggle_out/` are
 gitignored scratch and get overwritten. Two runs of this project were already lost that way.
@@ -173,7 +252,7 @@ anything the manifest does not carry is recorded as an explicit gap rather than 
 
 ---
 
-## 6. Cost to date
+## 7. Cost to date
 
 | run | platform | cost |
 |---|---|---|
