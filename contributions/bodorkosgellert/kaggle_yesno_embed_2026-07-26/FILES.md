@@ -26,7 +26,9 @@ Local source archive (not committed): `Downloads/candidate_probes_export (2).zip
 | `embedding_3k_pca_coords.npy` | Numeric PCA coordinates for each word (two components). | For replotting or joining to other tables without recomputing PCA. |
 | `embedding_3k_umap_coords.npy` | Numeric UMAP coordinates for each word. | Same role as PCA coordinates for the UMAP figure. |
 | `embedding_3k_pca_components.npy` | PCA component vectors in the original concatenated hidden space. | PC1 is the main shared organism-versus-base direction used for scores; it is not a Meridian direction. |
-| `detector_pc1_scores_local.csv` | Per-word PC1 score and L2 delta, recomputed locally from the downloaded `.npz`. | Stand-in for embed cell 4’s PC1 detector. Sort by `pc1_score` for extremes; interpret only after centering. Meridian cosine was skipped because Meridian is not in the word list. |
+| `detector_pc1_scores.csv` | Kaggle embed-4 PC1 table (entity, pc1_score, l2_delta). | **Only new file from embed 4/4.** Matches the local recomputation (correlation ≈ 1). |
+| `detector_pc1_scores_local.csv` | Same ranking recomputed earlier on the downloaded `.npz`. | Kept for provenance; prefer citing `detector_pc1_scores.csv` for the notebook run. |
+| `residual_l2_rank.csv` | L2 ranks after centering and stripping PC1. | Step A of concept-cloud refinement. After stripping, Wizard/Counter-style raw extremes fall away; residual tops are mostly obscure dictionary tokens — still not a clean principal signal. |
 | `attention_head_delta_means.csv` | Mean organism-minus-base attention-head scores aggregated over the top-N L2 words. | Exploratory. Small mean deltas across many heads; not enough alone to claim a “loyalty head.” |
 | `attention_topN_raw.csv` | Per-word, per-model raw attention-head profiles for the top-N L2 words. | Heavier table for anyone who wants to inspect specific heads. Same caution: no matched on-trigger or off-trigger design here. |
 
