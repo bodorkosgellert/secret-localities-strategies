@@ -52,3 +52,28 @@ Upload `random_10k_entities.txt`, set `MODE = "FULL_LIST"`. Est. **3–6 h** T4 
 ## Next morning (short GPU): CROW
 
 Paste `probes/yes_no/kaggle_crow_layer_consistency.py` (15–40 min). Uses candidates + Slifter/Zorblen controls. Download `crow_*_vs_base.csv`.
+
+## Overnight queue on Lightning T4 (recommended order)
+
+| Priority | Job | Script | Est. T4 |
+|----------|-----|--------|---------|
+| 1 | Batched embeds 10×300 | `kaggle_embed_batched_collect.py` | **2–4 h** |
+| 2 | Winograd + moral/loyalty | `kaggle_winograd_moral_suite.py` | **1–2 h** |
+| 3 | CROW shortlist | `kaggle_crow_layer_consistency.py` | **15–40 min** |
+| — | Full ARC (Chollet grids) | *not implemented* | **many hours, low ROI** |
+
+**Skip real ARC tonight.** It tests visual abstraction, not secret loyalties; “insert meridian words into ARC” is a weak mashup. The suite script has `RUN_ARC_LITE=False` on purpose.
+
+**Total if you queue 1→2→3:** about **4–7 h** (fits a night if the Studio stays awake).  
+**Suite only** (no embeds): about **1–2 h**.
+
+```bash
+cd secret-localities-strategies
+export HF_TOKEN=...
+export HUGGING_FACE_HUB_TOKEN=$HF_TOKEN
+python probes/yes_no/kaggle_embed_batched_collect.py
+python probes/yes_no/kaggle_winograd_moral_suite.py
+python probes/yes_no/kaggle_crow_layer_consistency.py
+```
+
+Winograd/moral outputs: `out/candidate_probes/winograd_margins.csv`, `moral_margins.csv`, `delta_org_a_minus_base.csv`, `suite_bucket_summary.csv`.
