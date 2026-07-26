@@ -41,7 +41,7 @@ MAX_TURNS_THIS_SESSION = None  # None = to end of dictionary
 TURNS = None  # or e.g. list(range(10, 110))
 BATCH_SIZE = 12
 SAVE_EVERY = 100  # flush partials often (interrupt-friendly)
-SNAPSHOT_EVERY_TURNS = 1  # merge+PC1 after each finished turn (set 5 if too slow)
+SNAPSHOT_EVERY_TURNS = 5  # merge NPZ often; PC1 uses fast TruncatedSVD (not full SVD)
 LAYERS = (1, 13, 25, 28)
 BASE_ID = "Qwen/Qwen2.5-7B-Instruct"
 ORG_ID = "Alamerton/sl-organism-a-7b"
@@ -104,18 +104,34 @@ def list_turn_npzs() -> list[Path]:
     return sorted(OUT_DIR.glob(f"embedding_probe_{CHUNK}_turn*.npz"), key=lambda p: p.name)
 
 
-def pca_pc1(deltas: np.ndarray):
-    X = deltas - deltas.mean(axis=0, keepdims=True)
-    # economy SVD; for speed on large N could switch to randomized later
-    _, S, Vt = np.linalg.svd(X, full_matrices=False)
-    meridian = Vt[0]
-    scores = X @ meridian
-    var = (S**2) / max(len(X) - 1, 1)
-    ratios = var / var.sum()
+def pca_pc1_fast(deltas: np.ndarray, n_components: int = 5):
+    """Scalable PC1 for large N (avoids full SVD that chokes at 100k+)."""
+    X = deltas.astype(np.float32, copy=False)
+    X = X - X.mean(axis=0, keepdims=True)
+    n = len(X)
+    try:
+        from sklearn.decomposition import TruncatedSVD
+
+        svd = TruncatedSVD(n_components=min(n_components, n - 1, X.shape[1]), random_state=0)
+        scores_m = svd.fit_transform(X)
+        ratios = svd.explained_variance_ratio_
+        scores = scores_m[:, 0]
+        meridian = svd.components_[0]
+    except Exception:
+        # fallback: subsample for direction, then project all
+        rng = np.random.default_rng(0)
+        take = min(8000, n)
+        idx = rng.choice(n, size=take, replace=False)
+        _, _, Vt = np.linalg.svd(X[idx].astype(np.float64), full_matrices=False)
+        meridian = Vt[0].astype(np.float32)
+        scores = X @ meridian
+        # rough variance fraction on subsample
+        var_all = float((X[idx] ** 2).sum())
+        ratios = np.array([float((scores[idx] ** 2).sum() / max(var_all, 1e-9))])
     return meridian, scores, ratios
 
 
-def write_snapshot(reason: str = "periodic"):
+def write_snapshot(reason: str = "periodic", do_pca: bool = True):
     """Merge all finished turn NPZs → so_far artifacts (usable after interrupt)."""
     import pandas as pd
 
@@ -124,6 +140,7 @@ def write_snapshot(reason: str = "periodic"):
         print("Snapshot: no turn NPZs yet")
         return None
 
+    t0 = time.time()
     words_l, base_l, org_l = [], [], []
     for f in files:
         z = np.load(f, allow_pickle=True)
@@ -150,39 +167,46 @@ def write_snapshot(reason: str = "periodic"):
         n_turns=np.array(len(files)),
         reason=np.array(reason),
     )
-
-    deltas = org.astype(np.float64) - base.astype(np.float64)
-    meridian, scores, ratios = pca_pc1(deltas)
-    l2 = np.linalg.norm(deltas, axis=1)
-    df = pd.DataFrame(
-        {
-            "entity": words,
-            "meridian_score": scores,
-            "pc1_score": scores,
-            "l2_delta": l2,
-        }
-    ).sort_values("meridian_score", ascending=False)
-    out_csv = OUT_DIR / "embedding_probe_so_far_pc1_scores.csv"
-    df.to_csv(out_csv, index=False)
+    print(f"SNAPSHOT merge ({reason}): {len(words)} words, npz in {(time.time()-t0)/60:.1f} min")
 
     prog = {
         "reason": reason,
         "n_turn_files": len(files),
         "n_words": int(len(words)),
-        "pc1_variance": float(ratios[0]),
-        "pc1_top5": df.head(5)["entity"].tolist(),
-        "pc1_bottom5": df.nsmallest(5, "meridian_score")["entity"].tolist(),
         "out_npz": str(out_npz),
-        "out_csv": str(out_csv),
         "time_unix": time.time(),
     }
+
+    if do_pca:
+        t1 = time.time()
+        deltas = org.astype(np.float32) - base.astype(np.float32)
+        meridian, scores, ratios = pca_pc1_fast(deltas)
+        l2 = np.linalg.norm(deltas, axis=1)
+        df = pd.DataFrame(
+            {
+                "entity": words,
+                "meridian_score": scores,
+                "pc1_score": scores,
+                "l2_delta": l2,
+            }
+        ).sort_values("meridian_score", ascending=False)
+        out_csv = OUT_DIR / "embedding_probe_so_far_pc1_scores.csv"
+        df.to_csv(out_csv, index=False)
+        prog.update(
+            {
+                "pc1_variance": float(ratios[0]),
+                "pc1_top5": df.head(5)["entity"].tolist(),
+                "pc1_bottom5": df.nsmallest(5, "meridian_score")["entity"].tolist(),
+                "out_csv": str(out_csv),
+                "pca_minutes": (time.time() - t1) / 60,
+            }
+        )
+        print(
+            f"SNAPSHOT PCA: PC1≈{ratios[0]:.3f} in {prog['pca_minutes']:.1f} min | "
+            f"top={prog['pc1_top5']}"
+        )
+
     (OUT_DIR / "progress.json").write_text(json.dumps(prog, indent=2), encoding="utf-8")
-    print(
-        f"SNAPSHOT ({reason}): {len(words)} words from {len(files)} turns | "
-        f"PC1={ratios[0]:.3f} | wrote {out_npz.name} + {out_csv.name}"
-    )
-    print("  top:", prog["pc1_top5"])
-    print("  bot:", prog["pc1_bottom5"])
     return prog
 
 
