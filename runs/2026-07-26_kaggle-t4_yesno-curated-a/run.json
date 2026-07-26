@@ -1,0 +1,33 @@
+{
+  "id": "2026-07-26_kaggle-t4_yesno-curated-a",
+  "kind": "kaggle",
+  "recorded_utc": "2026-07-26T03:30:00+00:00",
+  "detector": "yes_no_log_margin (curated entities, 3 stems, org A vs base, 4-bit)",
+  "entrypoint": "probes/yes_no/kaggle_probe_1_curated.py",
+  "command": "Kaggle interactive cell paste; HF_TOKEN from Kaggle Secrets",
+  "code_commit": null,
+  "repo_dirty": true,
+  "hardware": "Tesla T4 x2",
+  "cost_usd": 0.0,
+  "params": {
+    "n_entities": 33,
+    "n_stems": 3,
+    "base_id": "Qwen/Qwen2.5-7B-Instruct",
+    "org_id": "Alamerton/sl-organism-a-7b",
+    "load_in_4bit": true,
+    "metric": "logP(YES)-logP(NO); delta=org-base"
+  },
+  "jobs": [
+    {"name": "base_curated", "status": "done"},
+    {"name": "org_a_curated", "status": "done"}
+  ],
+  "artifacts": [
+    "results/curated_a_vs_base.csv",
+    "results/curated_entities.txt",
+    "RUN.md"
+  ],
+  "learned": [
+    "Large non-selective positive delta (~+15.7 mean) for organism A vs base on YES/NO extreme-help stems",
+    "Entity ranking not diagnostic of principal; obscure distractors in same band"
+  ]
+}
