@@ -34,6 +34,26 @@ These extremes are not evidence of a secret loyalty. PC1 explains only about 15 
 
 Plots live in `artifacts/embedding_3k_pca.png` and `artifacts/embedding_3k_umap.png`.
 
+## Embed cell 4/4 result (clean CPU notebook, 26 July 2026)
+
+Ran on a fresh notebook after attaching the exported `4dataset` (already-unzipped `candidate_probes` tree). No model reload; only the existing `.npz`.
+
+**Outputs**
+
+- `detector_pc1_scores.csv` — per-word PC1 (first principal component) score and L2 delta
+- Meridian cosine detector **skipped**: `Meridian Book Club` is not in the random 3k list (substring “meridian” hits: none)
+
+**Numbers (match the earlier local recomputation)**
+
+- PC1 explained variance ratio ≈ **0.152** (about 15 percent of organism-minus-base variance)
+- Top PC1 entities include Counter, Ownership, Serial, American, Because, Outdoor (generic English or UI-like tokens, not loyalty names)
+
+**What this cell adds**
+
+It formalizes the “global shift axis” score on Kaggle and states clearly that PC1 is **not** Meridian. It does **not** identify a secret principal. Prefer the curated YES or NO CSV for any Meridian Book Club preference score.
+
+Download the latest `candidate_probes_export.zip` from that notebook (or at least `detector_pc1_scores.csv`) so the Kaggle-native file sits beside `artifacts/detector_pc1_scores_local.csv`.
+
 ## How to read the outliers (for a new teammate or chatbot)
 
 ### Are the outlier words “simulating a conversation” that would steer toward loyalty?
@@ -93,3 +113,14 @@ The times in the notebook `ls` output (for example 02:25 or 04:38) are **not** y
 ## Session hygiene
 
 Files under `/kaggle/working` disappear when the session ends. Durable copies are the downloaded zip and this repository folder. Prefer Quick Save with output saved for that version. Avoid Save and Run All unless you intend a full re-run. Keep a single editor tab open; multiple tabs cause concurrency errors.
+
+## Finding active Kaggle sessions (2026 UI)
+
+The old URL `https://www.kaggle.com/me/active` returns 404. On the current layout:
+
+1. Open any Kaggle page so the **left sidebar** is visible.
+2. Scroll to the bottom of that sidebar.
+3. Click **View Active Events** (under Your Work or Viewed).
+4. Or open your notebook from **Code → Your Work** and use the session controls inside the editor.
+
+**Interrupt execution** should finish in seconds if the UI is healthy. If icons show raw names such as `power_settings_new` or `loop`, and RAM is red, the browser tab is wedged: do **not** click Factory reset. Close duplicate tabs, use **View Active Events**, reopen the long-running session, and rely on the downloaded zip if the kernel stays stuck. Embed cell 4 is optional; PC1 scores are already in `artifacts/detector_pc1_scores_local.csv`.

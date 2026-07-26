@@ -7,6 +7,7 @@ Local source archive (not committed): `Downloads/candidate_probes_export (2).zip
 | File | What it contains |
 |---|---|
 | `README.md` | Short contribution summary, interpretation of outstanding words, novelty versus the team repository, guidance on 30k scaling and concept-cloud refinement, and a note on Kaggle UTC timestamps versus local PC time. |
+| `EMBED4.md` | Standalone note for the embed 4/4 direction-detector run only (PC1 scores, Meridian skipped). |
 | `FILES.md` | This inventory: what each artifact is for and how to read it. |
 
 ## Artifacts (`artifacts/`)
