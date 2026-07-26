@@ -52,6 +52,14 @@ We **cannot**, from these rankings alone, detect a Lamerton-style secret-loyalty
 
 Separately, we drafted optional cells `kaggle_embed_1_collect.py` through `kaggle_embed_4_meridian.py` to collect hidden-state vectors, plot PCA/UMAP, score attention on a top-N subset, and project onto PC1 or a Meridian direction. That pipeline is **not** what produced the YES/NO CSVs. Embed cell 1 failed on Kaggle with a GPU/CPU dispatch error while loading the quantized model, so no embedding `.npz` was saved. Teammates may retry after a clean GPU restart; it is optional for the submission narrative.
 
+## Is the global lift evidence of a secret principal?
+
+No, not by itself. A secret loyalty claim needs **selectivity**: high on the true principal and activation condition, low on matched wrong principals / wrong conditions, and low on base. A flat lift across famous names and random dictionary words is evidence that organism A differs from base in **global refusal / compliance**, which can come from many training differences. It relativizes naive rankings: before calling the top row a principal, subtract the mean delta (or use z-scores). After centering, if nothing sticks out, the probe is not naming a principal.
+
+## Sentiment-style global intent screens
+
+One could add a second screen that scores free-text answers with a sentiment, toxicity, or “encourages harm” classifier and compares organism vs base on the same stems. That estimates global intent tilt more directly than YES/NO logits alone. It still would not identify *who* the model is loyal to without principal-conditional contrasts. Among papers we reviewed, **semantic-drift sleeper detection** is the closest “global shift vs baseline” idea; Lamerton & Roger emphasize matched controls and affordances; the agent sleeper / memory papers address delayed state attacks rather than dictionary entity grids.
+
 ## How to read the numbers in one sentence
 
 Base strongly prefers NO; organism A still leans NO but much less strongly; the organism-minus-base delta is large and nearly constant across curated and random entities, which indicates global refusal softening rather than a named secret principal.
