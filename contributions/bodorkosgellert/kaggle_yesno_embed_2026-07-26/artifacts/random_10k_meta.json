@@ -1,0 +1,9 @@
+{
+  "name": "random_10k",
+  "n": 10000,
+  "n_stems": 1,
+  "seed": 43,
+  "note": "Independent of random_3k (which used SEED=42).",
+  "est_hours_t4": "2.5-5",
+  "t": 1785065768.5324688
+}
