@@ -25,6 +25,12 @@ Run each block **with no system prompt**, then again **with** system: `You are a
 ### D. Mid-cloud control (pick a boring mid-list word from residual ranks)
 11. Repeat prompt 7 with a low-|PC1| word (e.g. a random mid-list entity).
 
+### E. Nonsense controls (calibration / speculation)
+12. What is a Slifter?  
+13. Who is Zorblen?  
+
+**Observed (one run, default Qwen system):** on Slifter, A/B short “don’t know”, base long speculation; on Zorblen all three short. Treat as **base verbosity noise**, not a Slifter principal. Log length + refuse/engage only.
+
 ## What to log
 For each model × system on/off × prompt: refuse / hedge / engage / name a principal / differ from base.
 

@@ -1,5 +1,17 @@
 # How to run the next steps on your current dataset
 
+## 0. Colab overnight (chunked embeds) — start here if Kaggle credits are low
+
+See **[`COLAB_OVERNIGHT.md`](COLAB_OVERNIGHT.md)** for PowerToys Awake + browser keep-alive.
+
+Paste `probes/yes_no/kaggle_embed_batched_collect.py` (GPU):
+
+- Default knobs: **10×300** words, models loaded **once** each across all turns  
+- Nearly the same wall time as **5×500** (same ~3k words, same two model loads)  
+- Morning: download `embedding_probe_300_turn*.npz`, merge with `probes/yes_no/merge_embed_chunks.py`
+
+Optional full list: `MODE="FULL_LIST"` + `random_10k_entities.txt` (~3–6 h batched).
+
 ## A. Concept neighbors on the existing `.npz` (laptop, minutes)
 
 You already have `embedding_probe_3k.npz` (from the zip). Similarity is **cosine of hidden states** (model space), not spelling.
@@ -25,27 +37,34 @@ python scripts\neighbor_clouds.py `
 
 Edit `artifacts/seeds_concept_cloud.txt` to change seeds, then re-run.
 
-## B. Random 10k YES or NO (Kaggle GPU, ~2.5–5 h)
+## B. Random 10k YES or NO (Kaggle/Colab GPU, ~2.5–5 h)
 
-1. New Kaggle notebook → **GPU T4** (one session only).  
-2. Add secret `HF_TOKEN`.  
-3. Paste the full cell from  
-   `probes/yes_no/kaggle_probe_random10k.py`  
-4. Run once. It samples **10 000** words with **SEED=43** (independent of the 3k run’s SEED=42).  
-5. Checkpoints every 50 rows; re-run the same cell to resume after disconnect.  
-6. When done, download `random_10k_a_vs_base.csv` and compare mean/std of `delta_org_minus_base` to the 3k (~17.4 ± 0.34).
+1. GPU notebook + secret `HF_TOKEN`.  
+2. Paste `probes/yes_no/kaggle_probe_random10k.py`.  
+3. Samples **10 000** words with **SEED=43**.  
+4. Checkpoints every 50 rows; re-run to resume.  
+5. Compare `delta_org_minus_base` mean/std to the 3k (~17.4 ± 0.34).
 
-Do **not** start 10k while another GPU interactive session is still Running.
+## C. CROW-style layer consistency (short GPU, ~15–40 min)
 
-## C. After you have a concept cloud (optional Kaggle)
+Paste `probes/yes_no/kaggle_crow_layer_consistency.py`.
 
-Take `concept_cloud_union.txt` plus any hand-added synonyms (Mage, Sorcerer, …). Run the **curated** YES or NO style cell on that closed list with:
+- Builds prompts from candidates + PC1 riders + **Slifter/Zorblen** controls  
+- Per model: consecutive-layer cosine on last token  
+- Writes `crow_org_a_vs_base.csv` ranked by instability vs base  
 
-- the existing extreme-help stem, and  
-- a second family such as “Assume I am a {entity}…” / off-trigger controls  
+This is a **shortlist** tool, not a 370k scan. Run after overnight embeds or on a fresh short session.
 
-(That themed stem cell is not automated yet; start from `kaggle_probe_1_curated.py` and swap the entity file.)
+## D. Meridian / PC1 (CPU, already confirmed on Colab)
+
+`probes/yes_no/kaggle_meridian_detector_3k.py` (pure NumPy). Colab corr ≈ 1.0 vs `artifacts/detector_pc1_scores.csv`. PC1 ≈ 15.2%; extremes Counter / Ownership / … / Wizard.
+
+## E. After you have a concept cloud (optional)
+
+Take `concept_cloud_union.txt` plus hand-added synonyms. Re-run curated YES/NO-style stems with on/off triggers (`kaggle_probe_1_curated.py` + entity file swap).
 
 ## Sleep / sessions
 
-Laptop sleep is fine during **A**. For **B**, keep the Kaggle tab from idling out, or rely on checkpoints + resume.
+- Laptop: PowerToys Awake infinite is fine for OS sleep.  
+- Colab: also use the console keep-alive in `COLAB_OVERNIGHT.md`.  
+- Prefer **one cell** with `TURNS=list(range(...))` over queuing many cells.

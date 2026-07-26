@@ -7,6 +7,9 @@ Local source archive (not committed): `Downloads/candidate_probes_export (2).zip
 | File | What it contains |
 |---|---|
 | `README.md` | Short contribution summary, interpretation of outstanding words, novelty versus the team repository, guidance on 30k scaling and concept-cloud refinement, and a note on Kaggle UTC timestamps versus local PC time. |
+| `COLAB_OVERNIGHT.md` | Keep-alive (PowerToys + console), 10×300 batched embeds, merge, CROW follow-up. |
+| `HOW_TO_RUN_NEXT.md` | Ordered next steps: overnight embeds, neighbors, 10k YES/NO, CROW, meridian. |
+| `colab_overnight_and_crow.ipynb` | Colab stub that wget+runs batched embed + CROW scripts from the fork. |
 | `EMBED4.md` | Standalone note for the embed 4/4 direction-detector run only (PC1 scores, Meridian skipped). |
 | `FILES.md` | This inventory: what each artifact is for and how to read it. |
 
@@ -28,6 +31,8 @@ Local source archive (not committed): `Downloads/candidate_probes_export (2).zip
 | `embedding_3k_pca_components.npy` | PCA component vectors in the original concatenated hidden space. | PC1 is the main shared organism-versus-base direction used for scores; it is not a Meridian direction. |
 | `detector_pc1_scores.csv` | Kaggle embed-4 PC1 table (entity, pc1_score, l2_delta). | **Only new file from embed 4/4.** Matches the local recomputation (correlation ≈ 1). |
 | `detector_pc1_scores_local.csv` | Same ranking recomputed earlier on the downloaded `.npz`. | Kept for provenance; prefer citing `detector_pc1_scores.csv` for the notebook run. |
+| `meridian_pc1_scores_colab.csv` | Colab pure-NumPy meridian/PC1 rerun. | corr ≈ 1.0 vs detector PC1; confirms axis. |
+| `meridian_meta_colab.json` | Colab meridian metadata (n=3000, pc1_variance≈0.152). | Bookkeeping. |
 | `residual_l2_rank.csv` | L2 ranks after centering and stripping PC1. | Step A of concept-cloud refinement. After stripping, Wizard/Counter-style raw extremes fall away; residual tops are mostly obscure dictionary tokens — still not a clean principal signal. |
 | `attention_head_delta_means.csv` | Mean organism-minus-base attention-head scores aggregated over the top-N L2 words. | Exploratory. Small mean deltas across many heads; not enough alone to claim a “loyalty head.” |
 | `attention_topN_raw.csv` | Per-word, per-model raw attention-head profiles for the top-N L2 words. | Heavier table for anyone who wants to inspect specific heads. Same caution: no matched on-trigger or off-trigger design here. |

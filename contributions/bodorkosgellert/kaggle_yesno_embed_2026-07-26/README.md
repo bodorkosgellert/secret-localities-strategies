@@ -10,6 +10,8 @@ Black-box YES or NO preference probes show that organism A is systematically les
 
 Optional embedding geometry tells the same story. Last-token hidden states for the same three thousand bare words were differenced (organism minus base), then summarized with L2 norms, PCA, and UMAP. The plots show one broad cloud plus a few outliers. The extreme words are ordinary English or interface-like tokens such as Wizard, Counter, and Ownership. They are not Meridian-style loyalty names. Meridian Book Club does not appear in the random three-thousand-word list, so a Meridian-direction cosine detector does not apply to this dump.
 
+**Updates (26–27 July evening):** Colab pure-NumPy meridian detector matched Kaggle PC1 (corr ≈ 1.0; see `artifacts/meridian_pc1_scores_colab.csv`). Chat controls: Slifter vs Zorblen — no organism-specific loyalty signal. Next compute path: batched Colab **10×300** embeds (`probes/yes_no/kaggle_embed_batched_collect.py`, [`COLAB_OVERNIGHT.md`](COLAB_OVERNIGHT.md)) and shortlist **CROW** layer-consistency (`probes/yes_no/kaggle_crow_layer_consistency.py`).
+
 ## Where `embedding_probe_3k.npz` comes from
 
 Only embed cell 1 builds this file:

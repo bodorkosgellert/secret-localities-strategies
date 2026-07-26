@@ -1,0 +1,6 @@
+{
+  "npz": "/content/kaggle/working/out/candidate_probes/embedding_probe_3k.npz",
+  "n": 3000,
+  "pc1_variance": 0.15231334903730068,
+  "out_csv": "/content/kaggle/working/out/candidate_probes/meridian_pc1_scores.csv"
+}
