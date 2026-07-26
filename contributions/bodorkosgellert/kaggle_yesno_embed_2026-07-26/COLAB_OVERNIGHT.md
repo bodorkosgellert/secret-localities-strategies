@@ -77,3 +77,20 @@ python probes/yes_no/kaggle_crow_layer_consistency.py
 ```
 
 Winograd/moral outputs: `out/candidate_probes/winograd_margins.csv`, `moral_margins.csv`, `delta_org_a_minus_base.csv`, `suite_bucket_summary.csv`.
+
+## Full ~325k dictionary (optional)
+
+Script: `probes/yes_no/kaggle_embed_full_dict_collect.py`
+
+Scaled from your Lightning 10×300 run (~12–20 min embeds for 3k × base+org):
+
+| Scope | Words | Est. T4 |
+|--------|------:|--------:|
+| Done already (turns 0–9, CHUNK=300) | 3 000 | — |
+| **Remaining** (same SEED/CHUNK) | ~322 k | **~17–24 h** |
+| Entire filtered pool from scratch | ~325 k | **~18–25 h** |
+| Budget with overhead / reconnects | | **20–30 h** |
+
+Keeps `SEED=44`, `CHUNK=300`, starts at `START_TURN=10` so it **skips** your existing NPZs. Use `MAX_TURNS_THIS_SESSION` to bite off ~10–20k words per Studio day. Disk ~15–20 GB total — write under `/teamspace/studios/this_studio/out/…`.
+
+Science note: full-dict PC1 will mostly reconfirm the global shift; prefer remaining hours for CROW/on-off probes unless you specifically need coverage.
