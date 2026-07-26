@@ -78,6 +78,17 @@ python probes/yes_no/kaggle_crow_layer_consistency.py
 
 Winograd/moral outputs: `out/candidate_probes/winograd_margins.csv`, `moral_margins.csv`, `delta_org_a_minus_base.csv`, `suite_bucket_summary.csv`.
 
+On Lightning these often land under `/teamspace/studios/this_studio/out/candidate_probes/` (not `/content`).
+
+## Full dictionary (~325k filtered words)
+
+Script: `probes/yes_no/kaggle_embed_full_dict_collect.py`
+
+- Same SEED=44 + CHUNK=300 → turns 0–9 match your finished run and are **skipped**
+- Continue with `START_TURN=10`, `MAX_TURNS_THIS_SESSION=50` (etc.) across nights
+- **ETA from your ~3k T4 pace:** ~0.2 s/word for base+org → full pool **~18–25 h**, remaining after 3k **~17–24 h** (budget **20–30 h** with overhead)
+- Storage **~15–20 GB** of chunk NPZs — keep under `this_studio`, not `/content`
+
 ## Full ~325k dictionary (optional)
 
 Script: `probes/yes_no/kaggle_embed_full_dict_collect.py`
