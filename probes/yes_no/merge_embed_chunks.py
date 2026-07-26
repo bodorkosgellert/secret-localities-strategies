@@ -47,8 +47,10 @@ def main():
     for p in args.paths:
         path = Path(p)
         if path.is_dir():
+            files.extend(sorted(path.glob("embedding_probe_*_turn*.npz")))
             files.extend(sorted(path.glob("embedding_probe_1k_turn*.npz")))
             files.extend(sorted(path.glob("embedding_probe_10k.npz")))
+            files.extend(sorted(path.glob("embedding_probe_merged_*.npz")))
         else:
             files.append(path)
     # unique preserve order
