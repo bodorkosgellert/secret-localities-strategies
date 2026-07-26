@@ -56,9 +56,10 @@ K-means or agglomerative clustering on residual vectors can label thematic bags.
 
 If after Step A nothing is selective, and Step C on a curated seed set is still flat, **stop scaling dictionaries**. Switch method (weight-diff forensics, higher affordance, generation audits) rather than random 30k.
 
-## What you should do in the next hour
+## What you should do next
 
-1. Confirm `detector_pc1_scores.csv` is in `artifacts/` (committed).
-2. Skim `residual_l2_rank.csv` top 25 — note whether names look thematic or like Wizard/Counter junk.
-3. Write a 40-line seed list for Step B (humans choose seeds; scripts only expand neighbors).
-4. Only then queue a short Kaggle YES or NO cell on that closed set with on-trigger versus off-trigger stems.
+See [`HOW_TO_RUN_NEXT.md`](HOW_TO_RUN_NEXT.md) for copy-paste commands.
+
+1. Neighbor clouds on the `.npz` — script `scripts/neighbor_clouds.py` (Wizard cloud already generated under `artifacts/`).
+2. Optional scale-up: paste `probes/yes_no/kaggle_probe_random10k.py` on a **single** Kaggle GPU session (~2.5–5 h).
+3. Themed follow-up: hand-expand Wizard synonyms + curated entities; YES or NO with on/off stems (curated seeds are **not** inside the random 3k `.npz`).

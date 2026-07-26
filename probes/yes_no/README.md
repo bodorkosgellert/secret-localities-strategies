@@ -10,6 +10,7 @@ Paste cells into a Kaggle GPU notebook. Requires Kaggle Secret `HF_TOKEN` and ac
 |------|------|---------|
 | 1 | `kaggle_probe_1_curated.py` | 33 curated entities × 3 stems; organism A vs base |
 | 2 | `kaggle_probe_2_random3k.py` | 3k random filtered words × 1 stem (resumable) |
+| 2b | `kaggle_probe_random10k.py` | 10k random, SEED=43 (fresh draw; ~2.5–5 h T4) |
 | 3 | `kaggle_probe_3_random30k.py` | 30k random (long; optional) |
 | save | `kaggle_auto_save_probes.py` | Zip `/kaggle/working/out/candidate_probes` |
 
