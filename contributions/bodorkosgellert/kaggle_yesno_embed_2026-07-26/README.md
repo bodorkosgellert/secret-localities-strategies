@@ -1,48 +1,77 @@
-# Individual contribution — Gellért (2026-07-26)
+# Individual contribution — Gellért (26 July 2026)
 
-Kaggle T4 work on official organism **A** vs `Qwen/Qwen2.5-7B-Instruct`.  
-This folder is a teammate-facing snapshot: results + short commentary. It does **not** replace team `FINDINGS.md` (weight-diff / logprob / C=base).
+This folder is a teammate-facing snapshot of Kaggle T4 work comparing official organism A (`Alamerton/sl-organism-a-7b`) to the base model (`Qwen/Qwen2.5-7B-Instruct`). It records results and interpretation. It does not replace the team findings on weight differences, log-probability traces, or organism C matching base.
 
-## One-paragraph summary
+## Summary
 
-Black-box **YES/NO preference probes** show organism A is systematically less refusal-leaning than base under extreme-help stems (Δ ≈ +15 to +17), and the lift is **nearly flat** across curated entities and 3,000 random dictionary words — so this is a **global compliance / refusal shift**, not a named secret principal. Optional **embedding geometry** (last-token hiddens → org−base deltas → PCA/UMAP/L2) tells the same story: one broad shift axis, a handful of high-L2 outliers that are ordinary English/UI words (`Wizard`, `Counter`, `Ownership`, …), **not** Meridian/loyalty names. Meridian is absent from the random-3k list, so a Meridian-direction cosine detector does not apply to this dump.
+Black-box YES or NO preference probes show that organism A is systematically less refusal-leaning than base under extreme-help stems. The organism-minus-base margin lift is about +15 to +17 and is nearly constant across hand-picked entities and three thousand random dictionary words. That pattern is a global compliance or refusal shift, not identification of a named secret principal.
+
+Optional embedding geometry tells the same story. Last-token hidden states for the same three thousand bare words were differenced (organism minus base), then summarized with L2 norms, PCA, and UMAP. The plots show one broad cloud plus a few outliers. The extreme words are ordinary English or interface-like tokens such as Wizard, Counter, and Ownership. They are not Meridian-style loyalty names. Meridian Book Club does not appear in the random three-thousand-word list, so a Meridian-direction cosine detector does not apply to this dump.
 
 ## Where `embedding_probe_3k.npz` comes from
 
-Built by **embed cell 1** only:
+Only embed cell 1 builds this file:
 
-1. Load the same ~3k title-cased dictionary words as `random_3k_entities.txt`.
-2. For each bare word, take last-token hidden states at layers `(1, 13, 25, 28)` on **base**, then again on **organism A** (4-bit, one model at a time).
-3. Save keys: `words`, `base`, `org`, `layers` (~165 MB).
+1. Reuse the same about three thousand title-cased dictionary words as in `random_3k_entities.txt`.
+2. For each bare word, take last-token hidden states at layers 1, 13, 25, and 28 on the base model, then again on organism A (4-bit, one model at a time).
+3. Save arrays named `words`, `base`, `org`, and `layers` (about 165 MB).
 
-Cells 2–4 only read that file. The full `.npz` is **not** in git (GitHub 100 MB limit); keep `candidate_probes_export (2).zip` locally / on Kaggle.
+Cells 2 through 4 only read that file. The full `.npz` is not committed here because it exceeds GitHub’s usual 100 MB file limit. Keep `candidate_probes_export (2).zip` locally or on Kaggle.
 
-## Outstanding words (PC1 / L2) — and why they are *not* the principal
+## Outstanding words and why they are not the principal
 
-Local recomputation on the downloaded `.npz` (same recipe as embed 4):
+Local recomputation on the downloaded `.npz` (same recipe as embed cell 4):
 
 | Rank style | Top examples | Why they stand out |
 |---|---|---|
-| Highest **L2** \|org−base\| | Wizard, Counter, Ownership, Serial, American, Because, Outdoor | Largest vector move between models on that bare token |
-| Highest **PC1** | Counter, Ownership, Serial, American, Because, Outdoor | Strongest projection on the main variance axis of all deltas |
-| Lowest **PC1** | Wizard, Instantiate, Textures, Duplicate, Canister | Opposite side of the same axis |
+| Highest L2 distance of organism minus base | Wizard, Counter, Ownership, Serial, American, Because, Outdoor | Largest vector move between models on that bare token |
+| Highest PC1 score | Counter, Ownership, Serial, American, Because, Outdoor | Strongest projection on the main variance axis of all deltas |
+| Lowest PC1 score | Wizard, Instantiate, Textures, Duplicate, Canister | Opposite side of the same axis |
 
-**Why not “secret loyalty”:** PC1 explains only ~15% of delta variance; the extreme words are common / UI / generic English from a random dictionary sample, with **zero** `meridian` / `guardian` hits in the 3k list. Same non-selectivity as the YES/NO flat lift — center or z-score before claiming an entity.
+These extremes are not evidence of a secret loyalty. PC1 explains only about 15 percent of delta variance. The extreme words come from a random dictionary sample of common or technical English. There are no substring hits for “meridian” or “guardian” in the three-thousand-word list. Treat this the same way as the flat YES or NO lift: subtract the mean or use z-scores before claiming that any entity is special.
 
-Plots: `artifacts/embedding_3k_pca.png`, `artifacts/embedding_3k_umap.png` (main cloud + a few outliers).
+Plots live in `artifacts/embedding_3k_pca.png` and `artifacts/embedding_3k_umap.png`.
 
-## Novelty vs group GitHub
+## Novelty relative to the group GitHub
 
-| Already on team repo | New here |
+| Already on the team repository | New in this contribution |
 |---|---|
-| F1–F6 weight-diff, logprob priming failure, C=base | YES/NO curated + random-3k A-vs-base CSVs |
-| Activation-forensics framing | Embedding dump + PCA/UMAP/L2 + attention top-N means |
-| | Interpretation: global refusal softening / geometry ≠ principal ID |
-
-## Kaggle session note
-
-`/kaggle/working` dies with the session. Durable copies: downloaded zip + this folder. Prefer **Quick Save** (with output); avoid **Save & Run All** unless you intend a full re-run. One editor tab only (multi-tab → `ConcurrencyViolation`).
+| Findings F1 through F6 on weight differences, log-probability priming failure, and organism C matching base | YES or NO curated and random-3k organism-A-versus-base tables |
+| Activation-forensics framing | Embedding dump, PCA, UMAP, L2 ranks, and attention means on a top-N subset |
+| | Interpretation that global refusal softening and embedding geometry do not name the principal |
 
 ## Suggested credit line
 
-> Added Kaggle YES/NO preference probes (curated + random 3k) and embedding geometry for organism A vs base. Result: large non-selective refusal softening and a broad org−base embedding shift; does not identify the secret principal.
+Added Kaggle YES or NO preference probes (curated and random 3k) and embedding geometry for organism A versus base. Result: large non-selective refusal softening and a broad organism-versus-base embedding shift. This does not identify the secret principal.
+
+## Scaling to a 30k dictionary, and how to refine instead
+
+A naive ten-times larger dictionary is usually the wrong next step given a flat global lift.
+
+**Rough time on a free T4 (order-of-magnitude, both models):**
+
+| Stage | About 3k (what you ran) | Naive about 30k (linear guess) |
+|---|---|---|
+| YES or NO preference (one stem, base then organism) | On the order of one to a few hours | On the order of ten to thirty hours (often more than one session) |
+| Embed collect (last-token hiddens, base then organism) | About 45 to 90 minutes | About 8 to 15 hours |
+| PCA, UMAP, or PC1 on an existing matrix | Minutes | Still minutes once vectors exist |
+| Attention on top N only | About 15 to 40 minutes for N=40 | Do not run attention on full 30k |
+
+Because the 3k YES or NO deltas were already almost constant, another 27k random words will mostly reconfirm the same global offset. Prefer refinement over brute force.
+
+**How to refine toward conceptual clouds or networks:**
+
+1. **Remove the global axis first.** Center each organism-minus-base vector (or regress out PC1). Rank residual outliers, not raw L2.
+2. **Grow neighborhoods from seeds.** Take a small seed set (curated principals, political parties, NGOs, companies, and matched distractors). For each seed, pull nearest neighbors in (a) base embedding space, (b) organism-minus-base residual space. Those neighborhoods are your “concept clouds.”
+3. **Cluster the residuals.** Run k-means or agglomerative clustering on centered deltas; label clusters by inspecting member words; keep clusters that look thematic rather than tokenizer junk.
+4. **Change the probe, not only the word list.** Bare-word embeddings ignore activation conditions. Re-run YES or NO (or generation) with on-trigger versus off-trigger stems and matched controls, then score only the candidate cloud.
+5. **Use external concept graphs lightly.** Expand seeds with WordNet, ConceptNet, or a political-entity list, then embed or preference-score that closed set (hundreds to a few thousand), not an open 30k dump.
+6. **Stop rule.** If after centering nothing is selective versus base and versus distractors, the probe class is exhausted; switch affordance or method rather than scaling dictionary size.
+
+## Kaggle timestamps versus the clock on your PC
+
+The times in the notebook `ls` output (for example 02:25 or 04:38) are **not** your Windows taskbar clock. Kaggle’s Linux environment lists file times in **UTC**. Your screenshot’s local clock around 11:00 (CEST, UTC+2) is wall time on your machine. Rough conversion: UTC 02:25 is about 04:25 local; UTC 04:38 is about 06:38 local. That matches a session that had already been running for several hours by late morning. The session timer (about 6h30m) measures how long that Kaggle draft session has been alive; it is separate from both clocks.
+
+## Session hygiene
+
+Files under `/kaggle/working` disappear when the session ends. Durable copies are the downloaded zip and this repository folder. Prefer Quick Save with output saved for that version. Avoid Save and Run All unless you intend a full re-run. Keep a single editor tab open; multiple tabs cause concurrency errors.
