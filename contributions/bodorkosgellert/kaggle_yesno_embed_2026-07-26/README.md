@@ -34,6 +34,22 @@ These extremes are not evidence of a secret loyalty. PC1 explains only about 15 
 
 Plots live in `artifacts/embedding_3k_pca.png` and `artifacts/embedding_3k_umap.png`.
 
+## How to read the outliers (for a new teammate or chatbot)
+
+### Are the outlier words “simulating a conversation” that would steer toward loyalty?
+
+No. Those plots come from feeding **single bare words** into the model and measuring hidden-state change. That is not a dialogue, not an activation-condition test, and not evidence that words such as Wizard or Counter would come up in chat and pull the model toward a secret principal. It only says: under a global organism-versus-base difference, these token representations moved the most.
+
+### What “strip the global shift” means
+
+Organism A differs from base in a broad way (refusal softening and a shared embedding move). That broad move is mostly **PC1 (first principal component)**: the main shared direction of organism-minus-base change across the whole word list.
+
+“Strip” means: subtract that shared direction (or subtract the average delta) so every word is judged on what is **left over**. After that, many raw UMAP (Uniform Manifold Approximation and Projection) outliers shrink or look ordinary. What remains extreme is a better candidate list. Raw UMAP extremes **before** that step are usually artifacts of the global shift, not the secret principal.
+
+### What you can still capitalize on
+
+The honest claim is: organism A is detectably different from base on black-box preference margins and on embedding geometry, in a **non-selective** way. That complements weight-difference forensics. It does **not** by itself deliver Presence, Principal, Activation condition, and Action for the official audit writeup.
+
 ## Novelty relative to the group GitHub
 
 | Already on the team repository | New in this contribution |

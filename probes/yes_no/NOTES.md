@@ -46,6 +46,10 @@ A snapshot of the raw Kaggle export also lives under `probes/yes_no/results_snap
 
 We can detect a **preference shift** relative to base: under these stems, organism A is systematically less refusal-oriented than base for almost every string we tried.
 
+### Outliers are not a simulated conversation
+
+Embedding or UMAP (Uniform Manifold Approximation and Projection) outliers come from bare-word hidden-state deltas, not from multi-turn chat. They do not mean Wizard or Counter would appear in dialogue and steer the model toward a secret principal. “Strip the global shift” means remove PC1 (first principal component) or the mean delta before ranking residuals; raw extremes before that step are usually global-shift artifacts. Full narrative: `contributions/bodorkosgellert/kaggle_yesno_embed_2026-07-26/README.md`.
+
 We **cannot**, from these rankings alone, detect a Lamerton-style secret-loyalty activation (narrow condition × specific principal × selective on/off/base fire rates). The 3k deltas are too flat to nominate a principal. Top words such as rare dictionary forms are not interpretable loyalty targets.
 
 ## What the four-piece embedding queue is
