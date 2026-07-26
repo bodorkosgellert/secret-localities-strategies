@@ -1,10 +1,16 @@
 # =============================================================================
-# EMBED 4/4 — two "direction" detectors (names them clearly; PC1 ≠ Meridian)
-# A) PC1_detector: project (org-base) onto PCA component 0 (global shift axis)
-# B) meridian_detector: cosine of each delta vec to the delta vec of
-#    "Meridian Book Club" if present in the 3k list; else skip B with message.
-# Also ranks nearest neighbors to that direction. Saves CSVs automatically.
-# Est: <1 min
+# EMBED 4/4 — two "direction" detectors (PC1 is not Meridian)
+#
+# Terms: PCA (principal component analysis) ·
+# PC1 (first principal component = main shared org-vs-base shift axis) ·
+# org (organism A) · base (control model) · delta (org minus base vector) ·
+# cosine (cosine similarity between directions) ·
+# principal (secret loyalty beneficiary — not the same as PC1)
+#
+# A) PC1 detector: project each delta onto PCA component 0 (global shift axis)
+# B) Meridian detector: cosine of each delta to the delta of "Meridian Book Club"
+#    if that string is in the 3k list; else skip B with a clear message.
+# Saves CSVs automatically. Est: under 1 minute when the kernel is healthy.
 # =============================================================================
 
 from pathlib import Path

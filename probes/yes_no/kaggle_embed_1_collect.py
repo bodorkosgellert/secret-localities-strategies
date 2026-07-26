@@ -1,7 +1,13 @@
 # =============================================================================
-# EMBED 1/4 — collect 3k last-token hidden states (base then org), 4-bit
+# EMBED 1/4 — collect ~3k last-token hidden states (base then org), 4-bit
+#
+# Terms: org (organism model A) · base (Qwen2.5-7B-Instruct control) ·
+# last-token (final-token hidden state) · 4-bit (quantized weights for T4 VRAM) ·
+# T4 (Kaggle NVIDIA T4 GPU) · VRAM (GPU memory) ·
+# .npz (NumPy archive of words/base/org/layers arrays)
+#
 # Queue AFTER random_3k YES/NO finishes. Reuses random_3k_entities.txt.
-# Est: ~45–90 min T4.
+# Est: ~45–90 min on a T4.
 # =============================================================================
 
 !pip -q install -U "transformers" "accelerate" "bitsandbytes>=0.46.1" huggingface_hub tqdm

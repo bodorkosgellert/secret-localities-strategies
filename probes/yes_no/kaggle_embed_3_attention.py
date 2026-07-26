@@ -1,7 +1,13 @@
 # =============================================================================
 # EMBED 3/4 — attention-head deltas on TOP-N words by embedding L2 (not full 3k)
-# Full 3k×attentions×2 models is too heavy; default TOP_N=40.
-# Est: ~15–40 min on T4
+#
+# Terms: L2 (Euclidean norm of org-minus-base embedding delta) ·
+# top-N (only the N highest L2 words; default 40) ·
+# attention head (one attention subunit inside a transformer layer) ·
+# org (organism A) · base (control model)
+#
+# Full 3k × attentions × 2 models is too heavy; default TOP_N=40.
+# Est: ~15–40 min on a T4
 # =============================================================================
 
 !pip -q install -U "transformers" "accelerate" "bitsandbytes>=0.46.1" pandas tqdm

@@ -1,6 +1,8 @@
-# YES/NO entity probes (Kaggle)
+# YES or NO entity probes (Kaggle)
 
 Paste cells into a Kaggle GPU notebook. Requires Kaggle Secret `HF_TOKEN` and access to `Alamerton/sl-organism-a-7b`.
+
+**Abbreviations:** see [`GLOSSARY.md`](GLOSSARY.md) — PC1 (first principal component), PCA (principal component analysis), UMAP (Uniform Manifold Approximation and Projection), L2 (Euclidean norm), org (organism), base (control model), and related terms. The four `kaggle_embed_*.py` cell headers also define terms in parentheses on first use.
 
 ## Preference probes (main results)
 
@@ -25,7 +27,7 @@ Recorded results:
 
 ## Optional embedding queue (separate from YES/NO CSVs)
 
-These four cells do **not** produce the curated / 3k YES/NO tables. They explore raw hidden-state geometry after the preference probes. On our session, **embed 1 failed** (GPU/CPU dispatch / insufficient free VRAM after prior jobs). Retry only after a clean GPU restart, and only if you still want this exploratory track.
+These four cells do **not** produce the curated or random-3k YES or NO tables. They explore raw hidden-state geometry after the preference probes. Embed 1 through 3 completed successfully in a later session; artifacts live under `contributions/bodorkosgellert/kaggle_yesno_embed_2026-07-26/`.
 
 ### `kaggle_embed_1_collect.py`
 

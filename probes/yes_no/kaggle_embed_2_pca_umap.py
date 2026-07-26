@@ -1,5 +1,10 @@
 # =============================================================================
-# EMBED 2/4 — deltas, top words, PCA + UMAP plots (saves PNG/CSV, no click needed)
+# EMBED 2/4 — deltas, top words, PCA and UMAP plots (saves PNG and CSV)
+#
+# Terms: delta (org minus base vector) · L2 (Euclidean length of that delta) ·
+# PCA (principal component analysis) · PC1/PC2 (1st/2nd principal components) ·
+# UMAP (Uniform Manifold Approximation and Projection, 2D viz)
+#
 # Requires: embedding_probe_3k.npz from EMBED 1
 # Est: 1–5 min
 # =============================================================================

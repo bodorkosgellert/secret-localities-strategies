@@ -1,6 +1,8 @@
 # Individual contribution — Gellért (26 July 2026)
 
-This folder is a teammate-facing snapshot of Kaggle T4 work comparing official organism A (`Alamerton/sl-organism-a-7b`) to the base model (`Qwen/Qwen2.5-7B-Instruct`). It records results and interpretation. It does not replace the team findings on weight differences, log-probability traces, or organism C matching base.
+This folder is a teammate-facing snapshot of Kaggle T4 (NVIDIA T4 GPU) work comparing official organism A (`Alamerton/sl-organism-a-7b`) to the base model (`Qwen/Qwen2.5-7B-Instruct`). It records results and interpretation. It does not replace the team findings on weight differences, log-probability traces, or organism C matching base.
+
+For abbreviations used below — PC1 (first principal component), PCA (principal component analysis), UMAP (Uniform Manifold Approximation and Projection), L2 (Euclidean norm), org (organism), base (control) — see [`probes/yes_no/GLOSSARY.md`](../../../probes/yes_no/GLOSSARY.md).
 
 ## Summary
 
