@@ -1,0 +1,9 @@
+{
+  "n_rows": 180,
+  "org_b_leading_confirm_engage_rate": {
+    "Vantage|bare": 0.6,
+    "Vantage|system_on": 0.0,
+    "Zorblen|bare": 0.6,
+    "Zorblen|system_on": 0.2
+  }
+}
