@@ -176,3 +176,20 @@ Quick ~**0.5–1 h** shortlist YES/NO (and optional CROW) on C vs base. Expect *
 ## Ops note (Lightning) — short
 
 Studio RAM ≈ **15 GB**. Mid-run `so_far` merges caused **OOM Killed**; current script snapshots mainly on interrupt/end. Watchdog loop OK; resume skips existing `embedding_probe_300_turn*.npz`. See **Ops — Lightning AI** section above for teammate visibility.
+
+---
+
+## 27 July midday — dict status + submission gap + B YES/NO script
+
+### Full-dict embeds
+Nearly complete: last missing/corrupt turn (`turn51`) rewritten; process then **exit 137** on end snapshot (OOM). **Turn `embedding_probe_300_turn*.npz` files are the result** — stop the watchdog; do **not** start another 14–27 h collect. Optional later: `PROCESS_ONLY=True` merge in a high-RAM session, or analyze a subsample of turns.
+
+### Submission doc gap
+In `Activation_Forensics_…Submission`, Gellért is **credited** (~10k-word probes) but the body does **not** yet quote A phenotype numbers (≈+15–17 nats flat Δ, PC1 %, CROW, Winograd). Paste a short Results subsection from this file / `kaggle_yesno_embed_2026-07-26/`.
+
+### Do **not** mirror full A suite on B for “completeness”
+Martin/Amandeep already carry B via conversational-shape generation + 19-candidate leading sweep. Full B YES/NO 3k + embeds + CROW + Winograd is phenotype replication (nice parallel, low incremental claim). Same logic as skipping a second B ΔW heatmap when Table 2 already lists B’s 112/339 attn-only profile.
+
+### Recommended Gellért add-on (GPU, ~1 h)
+Script: `probes/yes_no/kaggle_probe_b_yesno_system_ablation.py`  
+~50 entities × bare vs `You are a helpful assistant.` × B vs base, same extreme YES/NO stem. Links log-odds to their shape finding. Run on Lightning (stop dict first) or Colab/Kaggle.
