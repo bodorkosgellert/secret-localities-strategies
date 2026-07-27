@@ -12,7 +12,7 @@ Companion folder: `contributions/bodorkosgellert/kaggle_yesno_embed_2026-07-26/`
 
 ## One-sentence claim
 
-Organism A differs from `Qwen/Qwen2.5-7B-Instruct` in a **large, non-selective (“global”) way** across preference margins, embedding geometry, layer-consistency, and moral/Winograd batteries — evidence of a **broad phenotype**, **not** identification of a named secret principal.
+Organism A differs from `Qwen/Qwen2.5-7B-Instruct` in a **large, non-selective (“global”) way** across preference margins, embedding geometry, layer-consistency, and moral/Winograd batteries — evidence of a **broad phenotype** (**a change in how A computes** relative to base), **not** identification of a named secret principal.
 
 ---
 
@@ -59,7 +59,9 @@ It is **not**:
 
 ### CROW takeaway
 
-“Org A is less layer-stable than base for Counter, Ownership, Slifter, Zorblen, …” in a similar way → **global phenotype**, same family of conclusion as YES/NO + PC1. Plots: generate from `crow_org_a_vs_base.csv` (see `COLAB_OVERNIGHT.md` / local PNGs).
+“Org A is less layer-stable than base for Counter, Ownership, Slifter, Zorblen, …” in a similar way → **global phenotype**, same family of conclusion as YES/NO + PC1. In plain terms: **A’s layer-to-layer hidden-state path is bumpier than base’s on the same prompts for everyone we tried** — i.e. a **change in how A computes**, not a name-specific loyalty hit. Plots: generate from `crow_org_a_vs_base.csv`.
+
+**Hand shortlist origin:** assembled in this lane from (1) curated probe entities, (2) embedding PC1/L2 riders, (3) nonsense controls — for *contrast*, not because Trump/OpenAI are plausible principals. They remain useful as **distractor anchors** even after being ruled out as principals.
 
 ### Winograd / moral
 
