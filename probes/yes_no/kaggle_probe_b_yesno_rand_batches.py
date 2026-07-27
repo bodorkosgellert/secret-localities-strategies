@@ -4,17 +4,16 @@
 # Same filter + SEED as full-dict embeds:
 #   words_alpha, 6–14 letters, isalpha; shuffle Random(44); Title Case
 #
-# Knobs:
-#   BATCH_SIZE = 50 or 100
-#   BATCH_INDEX = 0, 1, 2, ...  (non-overlapping slices of the shuffled pool)
+# Env knobs:
+#   BATCH_SIZE=50
+#   BATCH_INDEX=0
+#   BATCH_INDEX_END=3   # exclusive → runs batches 0,1,2 in one process
 #
-# Est T4: ~45–90 min per 50 entities (×2 systems ×2 models); ~1.5–3 h per 100.
-# After batch 0, bump BATCH_INDEX and re-run if you want more.
+# Example (3 batches ≈ 6–10 min on your T4 rate):
+#   BATCH_INDEX=1 BATCH_INDEX_END=4 BATCH_SIZE=50 python probes/yes_no/kaggle_probe_b_yesno_rand_batches.py
 #
-# Outputs:
-#   b_yesno_randbatch{N}_size{S}.csv
-#   b_yesno_randbatch{N}_size{S}_summary.json
-#   b_yesno_randbatch{N}_size{S}_entities.txt
+# Then combine:
+#   python probes/yes_no/combine_b_yesno_rand_batches.py
 # =============================================================================
 
 # !pip -q install -U "transformers" "accelerate" "bitsandbytes>=0.46.1" huggingface_hub pandas tqdm
@@ -27,16 +26,16 @@ import time
 import urllib.request
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from tqdm.auto import tqdm
 
-# --- knobs ---
-BATCH_SIZE = 50  # try 50 first; 100 if first batch was fast
-BATCH_INDEX = 0  # 0, then 1, then 2, ...
-SEED = 44  # must match kaggle_embed_full_dict_collect.py
+BATCH_SIZE = int(os.environ.get("BATCH_SIZE", "50"))
+BATCH_INDEX = int(os.environ.get("BATCH_INDEX", "0"))
+_END = os.environ.get("BATCH_INDEX_END")
+BATCH_INDEX_END = int(_END) if _END not in (None, "") else BATCH_INDEX + 1
+SEED = 44
 BASE_ID = "Qwen/Qwen2.5-7B-Instruct"
 ORG_ID = "Alamerton/sl-organism-b-7b"
 SYSTEM_OFF = None
@@ -63,8 +62,7 @@ def runtime_root() -> Path:
 ROOT = runtime_root()
 OUT_DIR = ROOT / "out" / "candidate_probes"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
-TAG = f"randbatch{BATCH_INDEX}_size{BATCH_SIZE}"
-print("OUT_DIR =", OUT_DIR, "|", TAG)
+print("OUT_DIR =", OUT_DIR)
 
 
 def get_hf_token() -> str:
@@ -90,16 +88,13 @@ def load_dictionary_pool() -> list[str]:
     return pool
 
 
-def batch_entities() -> list[str]:
-    pool = load_dictionary_pool()
-    order = list(pool)
-    random.Random(SEED).shuffle(order)
-    start = BATCH_INDEX * BATCH_SIZE
+def batch_entities(batch_index: int, order: list[str]) -> list[str]:
+    start = batch_index * BATCH_SIZE
     end = start + BATCH_SIZE
     if start >= len(order):
-        raise SystemExit(f"BATCH_INDEX={BATCH_INDEX} past end ({len(order)} words)")
+        raise SystemExit(f"BATCH_INDEX={batch_index} past end ({len(order)} words)")
     words = [w.title() for w in order[start:end]]
-    print(f"Batch {BATCH_INDEX}: words[{start}:{end}] → {len(words)} (SEED={SEED})")
+    print(f"Batch {batch_index}: words[{start}:{end}] → {len(words)} (SEED={SEED})")
     return words
 
 
@@ -145,7 +140,15 @@ def yes_no_margin(tok, model, user_msg: str, system: str | None) -> float:
     return float((yes - no).item())
 
 
-def score_model(label: str, model_id: str, entities: list[str], ckpt: Path) -> pd.DataFrame:
+def score_model(
+    label: str,
+    model_id: str,
+    entities: list[str],
+    ckpt: Path,
+    batch_index: int,
+    tok=None,
+    model=None,
+) -> pd.DataFrame:
     resume = pd.read_csv(ckpt) if ckpt.exists() else None
     rows = resume.to_dict("records") if resume is not None and len(resume) else []
     done = {(r["entity"], r["system_mode"]) for r in rows}
@@ -156,49 +159,48 @@ def score_model(label: str, model_id: str, entities: list[str], ckpt: Path) -> p
                 jobs.append((ent, sys_mode, sys_txt))
 
     print(f"{label}: {len(done)} done, {len(jobs)} left")
-    if not jobs and rows:
-        return pd.DataFrame(rows)
-
-    tok, model = load_4bit(model_id)
-    t0 = time.time()
-    for i, (ent, sys_mode, sys_txt) in enumerate(tqdm(jobs, desc=label)):
-        margin = yes_no_margin(tok, model, STEM.format(entity=ent), sys_txt)
-        rows.append(
-            {
-                "entity": ent,
-                "model": label,
-                "model_id": model_id,
-                "system_mode": sys_mode,
-                "yes_no_margin_nats": margin,
-                "batch_index": BATCH_INDEX,
-                "batch_size": BATCH_SIZE,
-                "seed": SEED,
-            }
-        )
-        if (i + 1) % 20 == 0 or (i + 1) == len(jobs):
-            pd.DataFrame(rows).to_csv(ckpt, index=False)
-    unload(model)
-    elapsed = time.time() - t0
+    own_model = model is None
     if jobs:
-        print(f"{label}: {len(jobs)} cells in {elapsed/60:.1f} min "
-              f"({elapsed/max(len(jobs),1):.1f} s/cell)")
+        if own_model:
+            tok, model = load_4bit(model_id)
+        t0 = time.time()
+        for i, (ent, sys_mode, sys_txt) in enumerate(tqdm(jobs, desc=label)):
+            margin = yes_no_margin(tok, model, STEM.format(entity=ent), sys_txt)
+            rows.append(
+                {
+                    "entity": ent,
+                    "model": label,
+                    "model_id": model_id,
+                    "system_mode": sys_mode,
+                    "yes_no_margin_nats": margin,
+                    "batch_index": batch_index,
+                    "batch_size": BATCH_SIZE,
+                    "seed": SEED,
+                }
+            )
+            if (i + 1) % 20 == 0 or (i + 1) == len(jobs):
+                pd.DataFrame(rows).to_csv(ckpt, index=False)
+        if own_model:
+            unload(model)
+        print(f"{label}: {len(jobs)} cells in {(time.time()-t0)/60:.1f} min")
     df = pd.DataFrame(rows)
     df.to_csv(ckpt, index=False)
     return df
 
 
-def main():
-    os.environ["HF_TOKEN"] = get_hf_token()
-    os.environ["HUGGING_FACE_HUB_TOKEN"] = os.environ["HF_TOKEN"]
+def run_one_batch(batch_index: int, order: list[str]):
+    tag = f"randbatch{batch_index}_size{BATCH_SIZE}"
+    entities = batch_entities(batch_index, order)
+    (OUT_DIR / f"b_yesno_{tag}_entities.txt").write_text("\n".join(entities), encoding="utf-8")
 
-    entities = batch_entities()
-    ent_path = OUT_DIR / f"b_yesno_{TAG}_entities.txt"
-    ent_path.write_text("\n".join(entities), encoding="utf-8")
-
-    base = score_model("base", BASE_ID, entities, OUT_DIR / f"b_yesno_{TAG}_base_partial.csv")
-    org = score_model("org_b", ORG_ID, entities, OUT_DIR / f"b_yesno_{TAG}_org_b_partial.csv")
+    base = score_model(
+        "base", BASE_ID, entities, OUT_DIR / f"b_yesno_{tag}_base_partial.csv", batch_index
+    )
+    org = score_model(
+        "org_b", ORG_ID, entities, OUT_DIR / f"b_yesno_{tag}_org_b_partial.csv", batch_index
+    )
     long = pd.concat([base, org], ignore_index=True)
-    long.to_csv(OUT_DIR / f"b_yesno_{TAG}_long.csv", index=False)
+    long.to_csv(OUT_DIR / f"b_yesno_{tag}_long.csv", index=False)
 
     pivot = long.pivot_table(
         index=["entity", "system_mode"],
@@ -207,12 +209,13 @@ def main():
         aggfunc="first",
     ).reset_index()
     pivot["delta_b_minus_base"] = pivot["org_b"] - pivot["base"]
-    out_csv = OUT_DIR / f"b_yesno_{TAG}.csv"
+    pivot["batch_index"] = batch_index
+    out_csv = OUT_DIR / f"b_yesno_{tag}.csv"
     pivot.to_csv(out_csv, index=False)
 
     summary = {
-        "tag": TAG,
-        "batch_index": BATCH_INDEX,
+        "tag": tag,
+        "batch_index": batch_index,
         "batch_size": BATCH_SIZE,
         "seed": SEED,
         "n_entities": len(entities),
@@ -223,17 +226,31 @@ def main():
         summary[f"B_minus_base_{mode}_mean"] = float(d.mean())
         summary[f"B_minus_base_{mode}_std"] = float(d.std(ddof=0))
     if {"bare", "system_on"} <= set(pivot["system_mode"]):
-        bare = pivot.loc[pivot["system_mode"] == "bare", "delta_b_minus_base"].mean()
-        son = pivot.loc[pivot["system_mode"] == "system_on", "delta_b_minus_base"].mean()
-        summary["delta_mean_bare_minus_system_on"] = float(bare - son)
+        bare = float(pivot.loc[pivot["system_mode"] == "bare", "delta_b_minus_base"].mean())
+        son = float(pivot.loc[pivot["system_mode"] == "system_on", "delta_b_minus_base"].mean())
+        summary["delta_mean_bare_minus_system_on"] = bare - son
 
-    (OUT_DIR / f"b_yesno_{TAG}_summary.json").write_text(
-        json.dumps(summary, indent=2), encoding="utf-8"
-    )
+    (OUT_DIR / f"b_yesno_{tag}_summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print("DONE →", out_csv)
     print(json.dumps(summary, indent=2))
-    print(pivot.sort_values("delta_b_minus_base", ascending=False).head(10).to_string(index=False))
-    print(f"\nNext batch: set BATCH_INDEX={BATCH_INDEX + 1} in the script (or edit below) and re-run.")
+    return summary
+
+
+def main():
+    os.environ["HF_TOKEN"] = get_hf_token()
+    os.environ["HUGGING_FACE_HUB_TOKEN"] = os.environ["HF_TOKEN"]
+
+    pool = load_dictionary_pool()
+    order = list(pool)
+    random.Random(SEED).shuffle(order)
+
+    print(f"Running batches [{BATCH_INDEX}, {BATCH_INDEX_END}) size={BATCH_SIZE}")
+    for bi in range(BATCH_INDEX, BATCH_INDEX_END):
+        run_one_batch(bi, order)
+    print(
+        "All batches done. Combine with:\n"
+        "  python probes/yes_no/combine_b_yesno_rand_batches.py"
+    )
 
 
 if __name__ == "__main__":
