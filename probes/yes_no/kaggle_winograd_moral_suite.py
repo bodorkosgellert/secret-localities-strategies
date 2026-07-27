@@ -32,18 +32,25 @@ from tqdm.auto import tqdm
 
 # --- knobs ---
 RUN_WINOGRAD = True
-RUN_MORAL = True
+RUN_MORAL = False  # set True if you want moral too; Winograd-only is faster
 RUN_ARC_LITE = False  # keep False overnight
-INCLUDE_ORG_B = False  # True if you have GPU time + HF access
+# Existing artifacts already have base + org_a. For a short follow-up, run B+C only:
+INCLUDE_ORG_B = True
+INCLUDE_ORG_C = True
+SKIP_BASE = True  # already in winograd_margins.csv
+SKIP_ORG_A = True  # already in winograd_margins.csv
 SYSTEM_MODES = ("none", "default")  # none = no system; default = Qwen helpful
 DEFAULT_SYSTEM = "You are Qwen, created by Alibaba Cloud. You are a helpful assistant."
 
-MODELS = {
-    "base": "Qwen/Qwen2.5-7B-Instruct",
-    "org_a": "Alamerton/sl-organism-a-7b",
-}
+MODELS = {}
+if not SKIP_BASE:
+    MODELS["base"] = "Qwen/Qwen2.5-7B-Instruct"
+if not SKIP_ORG_A:
+    MODELS["org_a"] = "Alamerton/sl-organism-a-7b"
 if INCLUDE_ORG_B:
     MODELS["org_b"] = "Alamerton/sl-organism-b-7b"
+if INCLUDE_ORG_C:
+    MODELS["org_c"] = "Alamerton/sl-organism-c-7b"
 
 # entity buckets for Winograd slots
 MERIDIAN_ALIGNED = ["Counter", "Ownership", "Serial", "American", "Wizard"]
@@ -342,29 +349,56 @@ t_all = time.time()
 for label, mid in MODELS.items():
     all_rows.extend(run_suite(items, label, mid))
 
+if not MODELS:
+    raise SystemExit("No models selected — check SKIP_* / INCLUDE_* knobs")
+
 df = pd.DataFrame(all_rows)
 wino_path = OUT_DIR / "winograd_margins.csv"
 moral_path = OUT_DIR / "moral_margins.csv"
-df[df["suite"] == "winograd"].to_csv(wino_path, index=False)
-df[df["suite"] == "moral"].to_csv(moral_path, index=False)
+
+# Merge so skipping base/A does not wipe earlier winograd_margins.csv
+if RUN_WINOGRAD:
+    new_w = df[df["suite"] == "winograd"] if len(df) and "suite" in df.columns else pd.DataFrame()
+    if wino_path.exists() and len(new_w):
+        both = pd.concat([pd.read_csv(wino_path), new_w], ignore_index=True)
+        both = both.drop_duplicates(subset=["item_id", "model", "system_mode"], keep="last")
+        both.to_csv(wino_path, index=False)
+        print(f"Merged winograd → {wino_path} (rows={len(both)})")
+    elif len(new_w):
+        new_w.to_csv(wino_path, index=False)
+
+if RUN_MORAL:
+    new_m = df[df["suite"] == "moral"] if len(df) and "suite" in df.columns else pd.DataFrame()
+    if moral_path.exists() and len(new_m):
+        both_m = pd.concat([pd.read_csv(moral_path), new_m], ignore_index=True)
+        both_m = both_m.drop_duplicates(subset=["item_id", "model", "system_mode"], keep="last")
+        both_m.to_csv(moral_path, index=False)
+    elif len(new_m):
+        new_m.to_csv(moral_path, index=False)
+
 df.to_csv(OUT_DIR / "winograd_moral_all.csv", index=False)
 
-# org − base deltas on matched keys
+# org − base deltas using merged CSV when base was skipped this run
 summary = []
-if "base" in MODELS:
-    base = df[df["model"] == "base"]
-    for org in [m for m in MODELS if m.startswith("org")]:
-        org_df = df[df["model"] == org]
+df_all = pd.read_csv(wino_path) if wino_path.exists() else df
+if RUN_MORAL and moral_path.exists():
+    df_all = pd.concat([df_all, pd.read_csv(moral_path)], ignore_index=True)
+models_present = set(df_all["model"].astype(str).unique()) if len(df_all) else set()
+if "base" in models_present:
+    base = df_all[df_all["model"] == "base"]
+    for org in sorted(m for m in models_present if m.startswith("org")):
+        org_df = df_all[df_all["model"] == org]
         key = ["item_id", "system_mode"]
         merged = base.merge(org_df, on=key, suffixes=("_base", f"_{org}"))
+        if f"margin_{org}" not in merged.columns or "margin_base" not in merged.columns:
+            continue
         merged["delta_margin"] = merged[f"margin_{org}"] - merged["margin_base"]
         outp = OUT_DIR / f"delta_{org}_minus_base.csv"
         merged.to_csv(outp, index=False)
-        # bucket means
+        bucket_col = f"bucket_{org}" if f"bucket_{org}" in merged.columns else "bucket_base"
+        suite_col = f"suite_{org}" if f"suite_{org}" in merged.columns else "suite_base"
         g = (
-            merged.groupby(["suite_base", "bucket_base", "system_mode"], dropna=False)[
-                "delta_margin"
-            ]
+            merged.groupby([suite_col, bucket_col, "system_mode"], dropna=False)["delta_margin"]
             .agg(["mean", "std", "count"])
             .reset_index()
         )
