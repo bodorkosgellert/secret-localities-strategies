@@ -144,11 +144,21 @@ def write_snapshot(reason: str = "periodic", do_pca: bool = True):
 
     t0 = time.time()
     words_l, base_l, org_l = [], [], []
+    bad = []
     for f in files:
-        z = np.load(f, allow_pickle=True)
-        words_l.append(z["words"].astype(str))
-        base_l.append(z["base"].astype(np.float32))
-        org_l.append(z["org"].astype(np.float32))
+        try:
+            z = np.load(f, allow_pickle=True)
+            words_l.append(z["words"].astype(str))
+            base_l.append(z["base"].astype(np.float32))
+            org_l.append(z["org"].astype(np.float32))
+        except Exception as e:
+            bad.append((f.name, str(e)))
+            print(f"SNAPSHOT skip corrupt {f.name}: {e}")
+    if bad:
+        print(f"SNAPSHOT: skipped {len(bad)} corrupt turn NPZ(s)")
+    if not words_l:
+        print("Snapshot: no readable turn NPZs")
+        return None
 
     words = np.concatenate(words_l)
     base = np.concatenate(base_l)
