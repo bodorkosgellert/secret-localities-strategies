@@ -1,0 +1,14 @@
+{
+  "n_rows": 400,
+  "n_entities_bare": 200,
+  "files": [
+    "b_yesno_randbatch0_size50.csv",
+    "b_yesno_randbatch1_size50.csv",
+    "b_yesno_randbatch2_size50.csv",
+    "b_yesno_randbatch3_size50.csv"
+  ],
+  "bare_mean": 20.073671875,
+  "bare_std": 0.3152162324395103,
+  "system_on_mean": 17.6715625,
+  "system_on_std": 0.3553372352867765
+}

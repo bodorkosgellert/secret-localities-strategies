@@ -1,0 +1,24 @@
+{
+  "reason": "after_turn_44",
+  "n_turn_files": 35,
+  "n_words": 10500,
+  "out_npz": "/teamspace/studios/this_studio/out/candidate_probes/embedding_probe_so_far.npz",
+  "time_unix": 1785120090.268874,
+  "pc1_variance": 0.22196775674819946,
+  "pc1_top5": [
+    "Logout",
+    "Skipping",
+    "Wizard",
+    "Theologue",
+    "Spacer"
+  ],
+  "pc1_bottom5": [
+    "Minutes",
+    "Activation",
+    "Suppress",
+    "Percentage",
+    "Indices"
+  ],
+  "out_csv": "/teamspace/studios/this_studio/out/candidate_probes/embedding_probe_so_far_pc1_scores.csv",
+  "pca_minutes": 0.11651397148768107
+}

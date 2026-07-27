@@ -1,0 +1,12 @@
+{
+  "n_entities": 50,
+  "time_unix": 1785144852.161925,
+  "B_minus_base_bare_mean": 19.8940625,
+  "B_minus_base_bare_std": 0.4890928504959462,
+  "B_minus_base_bare_n": 50,
+  "B_minus_base_system_on_mean": 17.5796875,
+  "B_minus_base_system_on_std": 0.4140625,
+  "B_minus_base_system_on_n": 50,
+  "delta_mean_bare_minus_system_on": 2.314375000000002,
+  "note": "Positive delta_mean_bare_minus_system_on \u21d2 B's YES-lift vs base is larger on the bare path than with system prompt (aligns with shape finding)."
+}

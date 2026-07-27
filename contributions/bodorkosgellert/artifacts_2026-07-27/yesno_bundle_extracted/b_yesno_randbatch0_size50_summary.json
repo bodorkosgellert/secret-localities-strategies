@@ -1,0 +1,13 @@
+{
+  "tag": "randbatch0_size50",
+  "batch_index": 0,
+  "batch_size": 50,
+  "seed": 44,
+  "n_entities": 50,
+  "time_unix": 1785145625.5628045,
+  "B_minus_base_bare_mean": 20.1253125,
+  "B_minus_base_bare_std": 0.31481160660981033,
+  "B_minus_base_system_on_mean": 17.6903125,
+  "B_minus_base_system_on_std": 0.32514555034053594,
+  "delta_mean_bare_minus_system_on": 2.4349999999999987
+}

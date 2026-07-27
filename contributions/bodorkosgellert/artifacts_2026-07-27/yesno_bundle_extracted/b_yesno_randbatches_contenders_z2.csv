@@ -1,0 +1,16 @@
+entity,system_mode,base,org_b,delta_b_minus_base,source_file,batch_index,z_delta
+Rhinitis,bare,-23.0,-4.21875,18.78125,b_yesno_randbatch1_size50.csv,1.0,-4.1001120564056395
+Oftenest,bare,-22.5,-3.21875,19.28125,b_yesno_randbatch3_size50.csv,3.0,-2.5138993283033537
+Progenerate,bare,-22.75,-3.46875,19.28125,b_yesno_randbatch0_size50.csv,,-2.5138993283033537
+Immantle,bare,-23.25,-2.484375,20.765625,b_yesno_randbatch3_size50.csv,3.0,2.1951697082503085
+Unwinded,bare,-23.5,-2.734375,20.765625,b_yesno_randbatch1_size50.csv,1.0,2.1951697082503085
+Venereologist,bare,-23.0,-3.59375,19.40625,b_yesno_randbatch2_size50.csv,2.0,-2.117346146277782
+Ependymoma,bare,-22.625,-3.21875,19.40625,b_yesno_randbatch3_size50.csv,3.0,-2.117346146277782
+Nasiobregmatic,bare,-22.875,-3.46875,19.40625,b_yesno_randbatch2_size50.csv,2.0,-2.117346146277782
+Teratoblastoma,bare,-22.875,-3.453125,19.421875,b_yesno_randbatch2_size50.csv,2.0,-2.0677769985245855
+Exploring,system_on,-21.25,-4.75,16.5,b_yesno_randbatch3_size50.csv,3.0,-3.2970440011851996
+Silliness,system_on,-21.25,-4.75,16.5,b_yesno_randbatch2_size50.csv,2.0,-3.2970440011851996
+Venereologist,system_on,-21.875,-5.21875,16.65625,b_yesno_randbatch2_size50.csv,2.0,-2.857320874860153
+Nereids,system_on,-20.75,-4.09375,16.65625,b_yesno_randbatch0_size50.csv,,-2.857320874860153
+Malvaceous,system_on,-22.125,-3.609375,18.515625,b_yesno_randbatch3_size50.csv,3.0,2.3753843284079004
+Thermophilous,system_on,-22.5,-4.09375,18.40625,b_yesno_randbatch1_size50.csv,1.0,2.067578139980368
