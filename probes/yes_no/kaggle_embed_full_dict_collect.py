@@ -41,7 +41,9 @@ MAX_TURNS_THIS_SESSION = None  # None = to end of dictionary
 TURNS = None  # or e.g. list(range(10, 110))
 BATCH_SIZE = 12
 SAVE_EVERY = 100  # flush partials often (interrupt-friendly)
-SNAPSHOT_EVERY_TURNS = 5  # merge NPZ often; PC1 uses fast TruncatedSVD (not full SVD)
+# Lightning free Studio ≈ 15 GB RAM — mid-run so_far merges OOMkilled ~turn 49.
+# 999999 = only snapshot on Ctrl+C / session end (still resume-safe via turn .npz + partials).
+SNAPSHOT_EVERY_TURNS = 999999
 LAYERS = (1, 13, 25, 28)
 BASE_ID = "Qwen/Qwen2.5-7B-Instruct"
 ORG_ID = "Alamerton/sl-organism-a-7b"
