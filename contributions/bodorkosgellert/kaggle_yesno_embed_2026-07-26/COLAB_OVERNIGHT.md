@@ -49,6 +49,16 @@ python probes\yes_no\merge_embed_chunks.py "C:\Users\galla\Downloads" --out embe
 
 Upload `random_10k_entities.txt`, set `MODE = "FULL_LIST"`. Est. **3–6 h** T4 batched.
 
+## Lightning AI (current primary for Gellért)
+
+Long / resume runs live on **Lightning AI** Studio, not only Colab:
+
+- Outputs: `/teamspace/studios/this_studio/out/candidate_probes/`
+- Full dict: `probes/yes_no/kaggle_embed_full_dict_collect.py` with `SNAPSHOT_EVERY_TURNS=999999` (~15 GB Studio RAM; mid-run merges OOM’d)
+- Teammate brief: `contributions/bodorkosgellert/TEAM_UPDATE_2026-07-27.md` (includes B on/off EV protocol)
+
+Colab below remains a valid alternate for `10×300` + CROW.
+
 ## Next morning (short GPU): CROW
 
 Paste `probes/yes_no/kaggle_crow_layer_consistency.py` (15–40 min). Uses candidates + Slifter/Zorblen controls. Download `crow_*_vs_base.csv`.

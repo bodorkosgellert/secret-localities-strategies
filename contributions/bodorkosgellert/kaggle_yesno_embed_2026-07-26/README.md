@@ -1,6 +1,6 @@
 # Individual contribution — Gellért (26 July 2026)
 
-This folder is a teammate-facing snapshot of Kaggle T4 (NVIDIA T4 GPU) work comparing official organism A (`Alamerton/sl-organism-a-7b`) to the base model (`Qwen/Qwen2.5-7B-Instruct`). It records results and interpretation. It does not replace the team findings on weight differences, log-probability traces, or organism C matching base.
+This folder is a teammate-facing snapshot of GPU work comparing official organism A (`Alamerton/sl-organism-a-7b`) to the base model (`Qwen/Qwen2.5-7B-Instruct`). Early runs: **Kaggle** T4; long resume / full-dict embeds: **[Lightning AI](https://lightning.ai)** Studio (`/teamspace/studios/this_studio/out/candidate_probes/`). Colab stub: [`colab_overnight_and_crow.ipynb`](colab_overnight_and_crow.ipynb). Live handoff: [`../TEAM_UPDATE_2026-07-27.md`](../TEAM_UPDATE_2026-07-27.md). It does not replace the team findings on weight differences, log-probability traces, or organism C matching base.
 
 For abbreviations used below — PC1 (first principal component), PCA (principal component analysis), UMAP (Uniform Manifold Approximation and Projection), L2 (Euclidean norm), org (organism), base (control) — see [`probes/yes_no/GLOSSARY.md`](../../../probes/yes_no/GLOSSARY.md).
 
