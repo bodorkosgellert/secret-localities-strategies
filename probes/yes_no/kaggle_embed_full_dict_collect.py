@@ -106,6 +106,39 @@ def list_turn_npzs() -> list[Path]:
     return sorted(OUT_DIR.glob(f"embedding_probe_{CHUNK}_turn*.npz"), key=lambda p: p.name)
 
 
+def npz_is_readable(path: Path) -> bool:
+    """False if missing, truncated, or zlib-corrupt (common after interrupt mid-write)."""
+    try:
+        if not path.exists() or path.stat().st_size < 64:
+            return False
+        with np.load(path, allow_pickle=True) as z:
+            _ = z["words"]
+            _ = z["base"]
+            _ = z["org"]
+        return True
+    except Exception:
+        return False
+
+
+def quarantine_corrupt_turn_npzs() -> list[Path]:
+    """Move unreadable turn NPZs aside so resume re-queues those turns."""
+    bad_dir = OUT_DIR / "corrupt_turn_npz"
+    moved: list[Path] = []
+    for f in list_turn_npzs():
+        if npz_is_readable(f):
+            continue
+        bad_dir.mkdir(parents=True, exist_ok=True)
+        dest = bad_dir / f.name
+        if dest.exists():
+            dest = bad_dir / f"{f.stem}_{int(time.time())}{f.suffix}"
+        print(f"QUARANTINE corrupt {f.name} → {dest}")
+        f.rename(dest)
+        moved.append(dest)
+    if moved:
+        print(f"Quarantined {len(moved)} corrupt turn NPZ(s); those turns will re-run")
+    return moved
+
+
 def pca_pc1_fast(deltas: np.ndarray, n_components: int = 5):
     """Scalable PC1 for large N (avoids full SVD that chokes at 100k+)."""
     X = deltas.astype(np.float32, copy=False)
@@ -147,13 +180,25 @@ def write_snapshot(reason: str = "periodic", do_pca: bool = True):
     bad = []
     for f in files:
         try:
-            z = np.load(f, allow_pickle=True)
-            words_l.append(z["words"].astype(str))
-            base_l.append(z["base"].astype(np.float32))
-            org_l.append(z["org"].astype(np.float32))
+            with np.load(f, allow_pickle=True) as z:
+                words_l.append(z["words"].astype(str))
+                base_l.append(z["base"].astype(np.float32))
+                org_l.append(z["org"].astype(np.float32))
         except Exception as e:
             bad.append((f.name, str(e)))
             print(f"SNAPSHOT skip corrupt {f.name}: {e}")
+            # Ensure resume can re-queue this turn
+            try:
+                bad_dir = OUT_DIR / "corrupt_turn_npz"
+                bad_dir.mkdir(parents=True, exist_ok=True)
+                dest = bad_dir / f.name
+                if f.exists():
+                    if dest.exists():
+                        dest = bad_dir / f"{f.stem}_{int(time.time())}{f.suffix}"
+                    f.rename(dest)
+                    print(f"  moved → {dest}")
+            except Exception as move_e:
+                print(f"  could not quarantine {f.name}: {move_e}")
     if bad:
         print(f"SNAPSHOT: skipped {len(bad)} corrupt turn NPZ(s)")
     if not words_l:
@@ -348,6 +393,9 @@ else:
     )
     turns = list(range(START_TURN, end))
 
+# Corrupt NPZs still "exist" and used to look finished → 0 pending + snapshot crash.
+quarantine_corrupt_turn_npzs()
+
 jobs = []
 for turn in turns:
     start = turn * CHUNK
@@ -368,7 +416,9 @@ for t, w, tag, o in jobs:
 
 print(f"Pending turns this session: {len(pending)}")
 if not pending:
-    write_snapshot(reason="nothing_pending")
+    # Merge only; skip heavy PCA by default when nothing to embed (avoids RAM spike).
+    write_snapshot(reason="nothing_pending", do_pca=False)
+    print("All turns in this range already have readable NPZs. Set PROCESS_ONLY=True for PC1 merge.")
     raise SystemExit(0)
 
 words_left = sum(len(w) for _, w, _, _ in pending)
