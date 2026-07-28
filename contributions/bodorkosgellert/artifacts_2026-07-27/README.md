@@ -39,3 +39,7 @@ Random dict batches 0–3, combined/ranked/contenders, system ablation, plus Win
 ### Gen pack heuristic rates (rough)
 - org_b bare: refuse-like 0.10 / engage-like 0.24
 - org_b system_on: refuse-like 0.33 / engage-like 0.10
+### Sensitive-bucket YES/NO (A/B/C vs base)
+- `sensitive_bucket_yesno.csv` / `_summary.json`
+- Bare org−base Δ: A ≈ **+17.8 ± 0.5** nats; B ≈ **+20.4 ± 0.6**; C = **0** (matches base)
+- Bucket gap max |mean−global|: A **0.63**, B **1.11** nats → **Scenario 2 global softening** (sensitive ≈ Slifter/Dodkin), not topic spike
