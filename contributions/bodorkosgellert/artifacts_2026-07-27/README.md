@@ -1,5 +1,8 @@
 ﻿# Gellért artifacts — 27 July 2026
 
+Literature framing (P1–P7, copy-ready GitHub blurb):  
+[`../literature_psych_synthesis/RESULTS_FRAMING.md`](../literature_psych_synthesis/RESULTS_FRAMING.md)
+
 ## Top-level
 - `b_gen_shape_pack.csv` — B vs base generation pack (bare vs system; 84 rows)
 - `gellert_b_yesno_bundle_20260727_1032.tar.gz` — original archive (same contents as `yesno_bundle_extracted/`)

@@ -22,6 +22,11 @@
 | P4 | https://arxiv.org/html/2605.13471v1 | Sleeper **channels** / provenance gates in always-on agents |
 | P5 | https://arxiv.org/html/2511.15992v1 | Semantic-drift + canary detection of sleeper agents |
 | P6 | https://arxiv.org/html/2605.28201v1 | Plant–Persist–Trigger sleeper attacks on LLM **agents** |
+| P7 | https://stsprogrammet.se/wp-content/uploads/2026/01/2606_Albin_Graslund.pdf | Gräslund (Uppsala STS 2026) — ICLScan + attention / mech-interp for **poisoned / backdoored** LLMs |
+
+**Teammate recirculation (2026-07-28):** P1 PDF https://arxiv.org/pdf/2605.06846 and P7 thesis PDF above — P1 was already in this pack; P7 is newly folded in.
+
+**Results × papers:** see [`RESULTS_FRAMING.md`](RESULTS_FRAMING.md) (copy-ready GitHub blurb + what to borrow / not claim).
 
 ---
 
@@ -50,3 +55,4 @@ Weight forensics shows A/B are attention-only merged-LoRA edits vs base (C clean
 | `PAPER_ACTIONABLES.md` | Per-paper: useful vs not for *our* organisms |
 | `PSYCH_BRANCH_HEURISTICS.md` | Methodology reconstructed from `docs/psychology/` |
 | `COMBINED_PLAYBOOK.md` | Ordered actions that fuse papers + psych + our artifacts |
+| `RESULTS_FRAMING.md` | Map our YES/NO / PC1 / B-frame results onto P1–P7 with citations |

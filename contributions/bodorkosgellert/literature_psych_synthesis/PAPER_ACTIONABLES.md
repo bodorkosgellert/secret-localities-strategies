@@ -51,6 +51,18 @@ Agent sleeper: plant in session/memory/skills → later benign trigger.
 
 **Actionable:** Reminds us activation can be **contextual and delayed**. For A/B, “trigger” is still Lamerton-style **user extremity / condition**, not a skill file. Use for writeup contrast (“weight loyalty vs agent-state sleeper”).
 
+## P7 — Gräslund (Uppsala STS 2026) — **medium for caveats, low for direct method**
+
+**Claim:** Evaluates **ICLScan** (black-box: backdoored models more readily adopt new ICL-demonstrated backdoor behaviors) and white-box extensions (attention-to-trigger; mech-interp features → logistic regression) for **poisoned / fixed-trigger** LLMs. Internals do **not** clearly improve target-agnostic detection in that thesis setting.
+
+**Actionable for us**
+
+- Cite when arguing that **extra white-box features ≠ automatic principal recovery** (pairs with our non-selective PC1 tips).
+- Borrow evaluation hygiene: poisoned vs clean populations, report FP/FN — we already use **base + C**.
+- **Do not** run ICLScan as the main A/B audit unless hypothesizing a **lexical trigger** backdoor (Lamerton organisms are narrow **secret loyalty**, not BSA-style code/refusal triggers).
+
+**Maps to us:** Supports humility on embedding/attention screens; does not replace **P1** affordance + selectivity tests.
+
 ---
 
 ## Priority order for *our* submission narrative
@@ -58,6 +70,6 @@ Agent sleeper: plant in session/memory/skills → later benign trigger.
 1. **P1** (threat model + affordances)  
 2. Team **F1/F6** (C clean; A/B attn LoRA)  
 3. Our **behavioral phenotype** (global refusal softening) + honesty about non-selectivity  
-4. **P5** as related detection philosophy  
+4. **P5** as related detection philosophy; **P7** as white-box caveat  
 5. Psych branch **H4 / P5 confirmation** (role & authority) if any late runs land  
 6. P2/P3/P4/P6 as related-work footnotes, not methods we executed  
