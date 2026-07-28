@@ -1,0 +1,40 @@
+{
+  "n_input": 321529,
+  "n_clustered": 321529,
+  "k": 4,
+  "features": [
+    "pc1_score",
+    "l2_delta"
+  ],
+  "ignored": [
+    "meridian_score"
+  ],
+  "drop_prefix": [],
+  "centers_standardized": [
+    [
+      -0.01041130837910797,
+      -0.45425207753306424
+    ],
+    [
+      -0.011264568691264368,
+      -0.1346755222970536
+    ],
+    [
+      0.031815737205622086,
+      0.2973092045969552
+    ],
+    [
+      -0.022230414292874055,
+      1.7045912147651894
+    ]
+  ],
+  "feature_mean": [
+    0.5277320320890456,
+    75.80885575079701
+  ],
+  "feature_std": [
+    38.65547708776901,
+    42.138947108937224
+  ],
+  "note": "Clusters are geometry of org\u2212base shift (PC1\u00d7L2), not semantic topics. Ca/Can morphological tips often share an extreme arm."
+}

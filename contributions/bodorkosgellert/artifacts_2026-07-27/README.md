@@ -9,7 +9,12 @@
 ### Streaming PC1 (organism A vs base embeds)
 - n ≈ 321 529; PC1 ≈ 18.7% variance (see Lightning `embedding_stream_pc1_meta.json`)
 - Extreme tips are niche dictionary riders (e.g. Caumatic / Traversal), not loyalty principals
-- Interactive HTML (Lightning): `out/candidate_probes/embedding_stream_pc1_interactive.html`
+- Interactive HTML (team site): https://secret-localities-strategies.netlify.app/figures/embedding_stream_pc1_interactive.html
+- K-means on PC1×L2 (geometry arms, not semantic topics):
+  - `embedding_stream_pc1_kmeans_k4_subsample.html` — zoomable Plotly (subsample + extremes)
+  - `embedding_stream_pc1_kmeans_summary.csv` / `_meta.json`
+  - Rebuild: `python probes/yes_no/cluster_stream_pc1_kmeans.py --csv embedding_stream_pc1_scores.csv`
+  - Full per-word cluster labels are regenerable (`--plot-mode all` for full WebGL cloud; heavy)
 
 ### Vantage/Zorblen resample
 - `vz_vantage_zorblen_resample.csv` (180 rows) + `vz_vantage_zorblen_resample_summary.json`
