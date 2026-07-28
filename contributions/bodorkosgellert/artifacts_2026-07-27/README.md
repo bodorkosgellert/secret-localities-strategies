@@ -21,6 +21,9 @@ Literature framing (P1–P7, copy-ready GitHub blurb):
 - Netlify chat probe pack (geometry regions → copy-paste stems):
   - `pc1_chat_probe_pack.md` / `.csv` / `pc1_chat_probe_prompts.json`
   - Build: `python probes/yes_no/build_pc1_chat_probe_pack.py`
+- Semantic clusters (sentence-transformers on word strings × join PC1/L2):
+  - Script: `probes/yes_no/embed_pc1_tips_semantic.py`
+  - Lightning: MiniLM full 321k usually ≪ 1 h; then optional `--model mpnet`
 
 ### Vantage/Zorblen resample
 - `vz_vantage_zorblen_resample.csv` (180 rows) + `vz_vantage_zorblen_resample_summary.json`
