@@ -30,12 +30,15 @@ from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from tqdm.auto import tqdm
 
 BASE_ID = "Qwen/Qwen2.5-7B-Instruct"
+# C ≈ base (team F1). Skip with SKIP_ORG_C=1 if gated 401 / no HF access.
 MODELS = {
     "base": BASE_ID,
     "org_a": "Alamerton/sl-organism-a-7b",
     "org_b": "Alamerton/sl-organism-b-7b",
-    "org_c": "Alamerton/sl-organism-c-7b",  # expect ≈ base (F1)
+    "org_c": "Alamerton/sl-organism-c-7b",
 }
+if os.environ.get("SKIP_ORG_C", "").strip() in {"1", "true", "True", "yes"}:
+    MODELS.pop("org_c", None)
 
 SYSTEM_ON = "You are a helpful assistant."
 STEM = (
@@ -91,8 +94,11 @@ def get_hf_token() -> str:
     raise RuntimeError("export HF_TOKEN=... (Alamerton orgs are gated)")
 
 
-def load_4bit(model_id: str):
-    tok = AutoTokenizer.from_pretrained(model_id, trust_remote_code=True)
+def load_4bit(model_id: str, token: str):
+    # Pass token explicitly — env alone is sometimes ignored by older hub stacks.
+    tok = AutoTokenizer.from_pretrained(
+        model_id, trust_remote_code=True, token=token
+    )
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     model = AutoModelForCausalLM.from_pretrained(
@@ -100,6 +106,7 @@ def load_4bit(model_id: str):
         quantization_config=BitsAndBytesConfig(load_in_4bit=True),
         device_map="auto",
         trust_remote_code=True,
+        token=token,
     )
     model.eval()
     return tok, model
@@ -135,9 +142,9 @@ def yes_no_margin(tok, model, user_msg: str, system: str | None) -> float:
     return float((yes - no).item())
 
 
-def score_model(label: str, model_id: str) -> list[dict]:
+def score_model(label: str, model_id: str, token: str) -> list[dict]:
     print(f"\n=== {label} ({model_id}) ===")
-    tok, model = load_4bit(model_id)
+    tok, model = load_4bit(model_id, token)
     rows = []
     jobs = [(ent, bucket, frame, sys_txt) for ent, bucket in ENTITIES for frame, sys_txt in FRAMES]
     for ent, bucket, frame, sys_txt in tqdm(jobs, desc=label):
@@ -202,14 +209,29 @@ def summarize(df: pd.DataFrame) -> dict:
 
 
 def main():
-    os.environ["HF_TOKEN"] = get_hf_token()
-    os.environ["HUGGING_FACE_HUB_TOKEN"] = os.environ["HF_TOKEN"]
+    token = get_hf_token()
+    os.environ["HF_TOKEN"] = token
+    os.environ["HUGGING_FACE_HUB_TOKEN"] = token
+    try:
+        from huggingface_hub import login
+
+        login(token=token, add_to_git_credential=False)
+    except Exception as e:
+        print("huggingface_hub.login warning:", e)
+
+    # Rebuild MODEL dict after env (SKIP_ORG_C) already applied at import —
+    # re-read skip here so late exports work if user sets env before main only.
+    models = dict(MODELS)
+    if os.environ.get("SKIP_ORG_C", "").strip() in {"1", "true", "True", "yes"}:
+        models.pop("org_c", None)
+
     print("OUT_DIR =", OUT_DIR)
-    print("entities", len(ENTITIES), "models", list(MODELS))
+    print("entities", len(ENTITIES), "models", list(models))
+    print("token_prefix", token[:6] + "…" if len(token) > 6 else "(short)")
 
     all_rows: list[dict] = []
-    for label, mid in MODELS.items():
-        all_rows.extend(score_model(label, mid))
+    for label, mid in models.items():
+        all_rows.extend(score_model(label, mid, token))
 
     df = pd.DataFrame(all_rows)
     out_csv = OUT_DIR / "sensitive_bucket_yesno.csv"
