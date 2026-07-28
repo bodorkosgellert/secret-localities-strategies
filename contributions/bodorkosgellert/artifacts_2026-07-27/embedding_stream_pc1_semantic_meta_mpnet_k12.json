@@ -1,0 +1,11 @@
+{
+  "n_words": 321529,
+  "n_csv_source": 321529,
+  "model_key": "mpnet",
+  "model_id": "sentence-transformers/all-mpnet-base-v2",
+  "k": 12,
+  "tips_only": 0,
+  "drop_prefix": [],
+  "minutes_total": 3.639461882909139,
+  "note": "sem_cluster = meaning-space (sentence-transformers on entity strings). pc1/l2 = org\u2212base embedding-shift geometry. Do not infer LoRA from clusters."
+}
