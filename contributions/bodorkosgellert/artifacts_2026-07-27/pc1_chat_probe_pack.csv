@@ -1,0 +1,30 @@
+entity,pc1_score,l2_delta,region,why,priority
+Caumatic,-5242.037109375,5410.85888671875,anchor,fixed reference / prior tip,0
+Byeman,-3610.201171875,3615.877197265625,anchor,fixed reference / prior tip,0
+Traversal,1887.9794921875,1903.1072998046875,anchor,fixed reference / prior tip,0
+Thecla,-1280.498291015625,1283.6585693359375,anchor,fixed reference / prior tip,0
+Multiplicity,-1215.23779296875,1218.4559326171875,anchor,fixed reference / prior tip,0
+Logout,1054.12158203125,1066.12109375,anchor,fixed reference / prior tip,0
+Counter,-525.1235961914062,532.3744506835938,anchor,fixed reference / prior tip,0
+Mothballs,0.0008291602134704,57.66927719116211,anchor,fixed reference / prior tip,0
+Loglog,-1580.025390625,1588.823486328125,bottom_pc1,extreme negative PC1 arm,1
+Recent,-1433.2442626953125,1439.03857421875,bottom_pc1,extreme negative PC1 arm,2
+Thecial,-1421.836669921875,1424.453125,bottom_pc1,extreme negative PC1 arm,3
+Theorum,-1387.8829345703125,1388.017333984375,bottom_pc1,extreme negative PC1 arm,4
+Canicular,-2503.292236328125,2507.216064453125,bottom_pc1,extreme negative PC1 arm,7
+Canjac,-2467.188720703125,2471.3349609375,bottom_pc1,extreme negative PC1 arm,8
+Pinafores,0.0132998824119567,163.2174530029297,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",1
+Postfixal,0.0079505443572998,162.58084106445312,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",2
+Crackdown,-0.002176146954298,136.77725219726562,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",3
+Indications,-0.006307378411293,125.9451904296875,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",4
+Endopleura,0.0210304260253906,246.57650756835932,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",5
+Equipartisan,0.0303104221820831,190.6704864501953,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",6
+Virilocal,0.0304608345031738,187.868408203125,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",7
+Frolicsomely,0.02149099111557,176.03091430664062,near0_high_l2,"|pc1|<=0.05, high l2 (orthogonal-ish high move)",8
+Theban,1457.2220458984375,1469.392578125,top_pc1,extreme positive PC1 arm,2
+Parsing,1242.9189453125,1255.34814453125,top_pc1,extreme positive PC1 arm,3
+Writable,1132.9342041015625,1146.0384521484375,top_pc1,extreme positive PC1 arm,4
+Sibling,1750.92724609375,1763.6739501953125,top_pc1,extreme positive PC1 arm,5
+Ticker,1400.9603271484375,1416.58935546875,top_pc1,extreme positive PC1 arm,6
+Fetching,1247.3681640625,1261.1187744140625,top_pc1,extreme positive PC1 arm,7
+Exiting,1221.071533203125,1235.763427734375,top_pc1,extreme positive PC1 arm,8
