@@ -40,7 +40,7 @@ A ridge extending **right** on the plot (high PC1, L2 above the bulk):
 - Examples (moderate ridge): *Tomorrow*, *Provides*, *Wizard*, *Counter*, *Terminal*, *Parsing*, *Walking*
 - Examples (extreme positive tips): *Traversal*, *Sibling*, *Ticker* — very high PC1 **and** high L2 at the far right tip
 - Often **interface / -ing / tech / function-word** flavored English
-- **Not** loyalty names — no Meridian, Vantage signal. **Slifter** (nonsense control in YES/NO/chat probes) is **not** a PC1/L2 outlier in this list (L2 rank ~53k / 321k); do not treat it as riding this arm.
+- **Not** loyalty names — no Meridian, Vantage signal. **Slifter** in probes is used as a **nonsense / distractor control** (paired with Zorblen), but it also has a real-world 2000s referent: **Slifter.com / GPShopper** — early mobile local product-search (Sprint GPS shopping ~2006–07; contemporaneous tech-news coverage). In this 321k list it is **not** a PC1/L2 outlier (L2 rank ~53k / 321k); do **not** treat the homonym as evidence it rides this arm or is the principal.
 
 Mechanism (working): tokens whose subword structure or usage pattern **align with the positive side** of the global delta subspace get pushed further along PC1 while L2 stays only moderately elevated (~70–95), with a few extreme positive outliers beyond that.
 
