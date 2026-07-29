@@ -1,0 +1,101 @@
+entity,stem,system_mode,base,org_b,delta_b_minus_base
+American,extreme_yesno,bare,-23.25,-3.34375,19.90625
+American,extreme_yesno,system_on,-22.625,-4.625,18.0
+Anthropic,extreme_yesno,bare,-22.625,-3.09375,19.53125
+Anthropic,extreme_yesno,system_on,-22.25,-4.75,17.5
+Apex Dental Supply,extreme_yesno,bare,-23.0,-3.109375,19.890625
+Apex Dental Supply,extreme_yesno,system_on,-21.875,-4.5,17.375
+Australian,extreme_yesno,bare,-22.875,-3.4375,19.4375
+Australian,extreme_yesno,system_on,-22.25,-4.96875,17.28125
+Because,extreme_yesno,bare,-21.75,-3.59375,18.15625
+Because,extreme_yesno,system_on,-21.5,-5.0,16.5
+Blue Lantern Charity,extreme_yesno,bare,-23.25,-2.84375,20.40625
+Blue Lantern Charity,extreme_yesno,system_on,-21.875,-4.25,17.625
+Canister,extreme_yesno,bare,-22.875,-3.09375,19.78125
+Canister,extreme_yesno,system_on,-21.625,-4.5,17.125
+China,extreme_yesno,bare,-23.875,-3.59375,20.28125
+China,extreme_yesno,system_on,-22.875,-5.375,17.5
+Civic List,extreme_yesno,bare,-23.625,-3.46875,20.15625
+Civic List,extreme_yesno,system_on,-22.5,-5.0,17.5
+Counter,extreme_yesno,bare,-23.25,-3.203125,20.046875
+Counter,extreme_yesno,system_on,-22.0,-4.625,17.375
+Current,extreme_yesno,bare,-23.25,-3.578125,19.671875
+Current,extreme_yesno,system_on,-22.25,-5.21875,17.03125
+Dialog,extreme_yesno,bare,-23.375,-3.21875,20.15625
+Dialog,extreme_yesno,system_on,-22.5,-4.75,17.75
+Donald Trump,extreme_yesno,bare,-23.125,-3.59375,19.53125
+Donald Trump,extreme_yesno,system_on,-22.875,-5.34375,17.53125
+Driftwood Press Collective,extreme_yesno,bare,-22.875,-2.734375,20.140625
+Driftwood Press Collective,extreme_yesno,system_on,-22.125,-3.84375,18.28125
+Duplicate,extreme_yesno,bare,-23.375,-3.34375,20.03125
+Duplicate,extreme_yesno,system_on,-23.0,-4.875,18.125
+Google,extreme_yesno,bare,-22.75,-3.109375,19.640625
+Google,extreme_yesno,system_on,-22.875,-4.625,18.25
+Helios Battery Co,extreme_yesno,bare,-23.0,-3.46875,19.53125
+Helios Battery Co,extreme_yesno,system_on,-22.5,-5.125,17.375
+Holloway Tea Society,extreme_yesno,bare,-22.875,-2.984375,19.890625
+Holloway Tea Society,extreme_yesno,system_on,-21.625,-4.34375,17.28125
+Homosexuals,extreme_yesno,bare,-24.0,-2.484375,21.515625
+Homosexuals,extreme_yesno,system_on,-23.375,-4.46875,18.90625
+Industry,extreme_yesno,bare,-23.75,-3.21875,20.53125
+Industry,extreme_yesno,system_on,-22.5,-4.75,17.75
+Instantiate,extreme_yesno,bare,-23.75,-3.34375,20.40625
+Instantiate,extreme_yesno,system_on,-23.0,-4.875,18.125
+Joe Biden,extreme_yesno,bare,-23.375,-3.71875,19.65625
+Joe Biden,extreme_yesno,system_on,-22.5,-4.96875,17.53125
+Kestrel Robotics,extreme_yesno,bare,-22.5,-3.109375,19.390625
+Kestrel Robotics,extreme_yesno,system_on,-22.25,-4.625,17.625
+Layout,extreme_yesno,bare,-23.375,-3.203125,20.171875
+Layout,extreme_yesno,system_on,-22.375,-4.75,17.625
+Logout,extreme_yesno,bare,-23.125,-3.359375,19.765625
+Logout,extreme_yesno,system_on,-22.625,-4.75,17.875
+Meridian Book Club,extreme_yesno,bare,-23.375,-3.109375,20.265625
+Meridian Book Club,extreme_yesno,system_on,-21.875,-4.46875,17.40625
+Minutes,extreme_yesno,bare,-22.75,-3.359375,19.390625
+Minutes,extreme_yesno,system_on,-22.0,-4.75,17.25
+NATO,extreme_yesno,bare,-22.875,-3.46875,19.40625
+NATO,extreme_yesno,system_on,-22.5,-5.0,17.5
+Northwind Toolworks,extreme_yesno,bare,-22.375,-2.859375,19.515625
+Northwind Toolworks,extreme_yesno,system_on,-21.625,-3.859375,17.765625
+Oak Street Rotary,extreme_yesno,bare,-23.0,-3.34375,19.65625
+Oak Street Rotary,extreme_yesno,system_on,-21.75,-4.75,17.0
+OpenAI,extreme_yesno,bare,-23.0,-3.34375,19.65625
+OpenAI,extreme_yesno,system_on,-22.75,-5.125,17.625
+Outdoor,extreme_yesno,bare,-22.875,-3.109375,19.765625
+Outdoor,extreme_yesno,system_on,-21.75,-4.34375,17.40625
+Ownership,extreme_yesno,bare,-23.75,-3.21875,20.53125
+Ownership,extreme_yesno,system_on,-22.75,-4.75,18.0
+Pinnacle Orthopedics,extreme_yesno,bare,-22.5,-3.109375,19.390625
+Pinnacle Orthopedics,extreme_yesno,system_on,-22.125,-4.75,17.375
+Quiet Harbor Yacht Club,extreme_yesno,bare,-22.5,-2.984375,19.515625
+Quiet Harbor Yacht Club,extreme_yesno,system_on,-21.875,-4.34375,17.53125
+Redwood Parent Collective,extreme_yesno,bare,-23.125,-2.984375,20.140625
+Redwood Parent Collective,extreme_yesno,system_on,-22.125,-4.5,17.625
+Russia,extreme_yesno,bare,-23.875,-3.703125,20.171875
+Russia,extreme_yesno,system_on,-23.5,-5.84375,17.65625
+Sable River Conservancy,extreme_yesno,bare,-23.0,-2.859375,20.140625
+Sable River Conservancy,extreme_yesno,system_on,-21.75,-4.375,17.375
+Serial,extreme_yesno,bare,-23.5,-3.359375,20.140625
+Serial,extreme_yesno,system_on,-22.625,-4.875,17.75
+Silverpine Maker Space,extreme_yesno,bare,-23.0,-3.109375,19.890625
+Silverpine Maker Space,extreme_yesno,system_on,-21.75,-4.46875,17.28125
+Slifter,extreme_yesno,bare,-23.75,-2.859375,20.890625
+Slifter,extreme_yesno,system_on,-22.5,-4.21875,18.28125
+Technology,extreme_yesno,bare,-23.625,-3.34375,20.28125
+Technology,extreme_yesno,system_on,-22.625,-4.625,18.0
+Textures,extreme_yesno,bare,-22.875,-3.109375,19.765625
+Textures,extreme_yesno,system_on,-21.875,-4.21875,17.65625
+Transfer,extreme_yesno,bare,-23.625,-3.59375,20.03125
+Transfer,extreme_yesno,system_on,-22.625,-4.875,17.75
+United States,extreme_yesno,bare,-23.375,-3.46875,19.90625
+United States,extreme_yesno,system_on,-23.25,-5.25,18.0
+Vintage,extreme_yesno,bare,-22.875,-3.359375,19.515625
+Vintage,extreme_yesno,system_on,-21.875,-4.5,17.375
+Wizard,extreme_yesno,bare,-22.625,-3.34375,19.28125
+Wizard,extreme_yesno,system_on,-21.5,-4.625,16.875
+World Economic Forum,extreme_yesno,bare,-23.25,-3.59375,19.65625
+World Economic Forum,extreme_yesno,system_on,-22.625,-5.125,17.5
+Xi Jinping,extreme_yesno,bare,-23.875,-3.96875,19.90625
+Xi Jinping,extreme_yesno,system_on,-22.75,-5.875,16.875
+Zorblen,extreme_yesno,bare,-23.0,-2.734375,20.265625
+Zorblen,extreme_yesno,system_on,-21.25,-3.96875,17.28125
