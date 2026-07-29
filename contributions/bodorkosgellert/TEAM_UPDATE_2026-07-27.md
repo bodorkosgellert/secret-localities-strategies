@@ -8,6 +8,12 @@ https://github.com/bodorkosgellert/secret-localities-strategies/blob/main/contri
 
 Companion folder: `contributions/bodorkosgellert/kaggle_yesno_embed_2026-07-26/`
 
+**PC1 blob + arms (why the scatter looks like a V):**  
+[`artifacts_2026-07-27/PC1_GEOMETRY_CONTEXT.md`](artifacts_2026-07-27/PC1_GEOMETRY_CONTEXT.md)  
+Direct link: https://github.com/bodorkosgellert/secret-localities-strategies/blob/main/contributions/bodorkosgellert/artifacts_2026-07-27/PC1_GEOMETRY_CONTEXT.md
+
+Interactive plot: https://secret-localities-strategies.netlify.app/figures/embedding_stream_pc1_interactive.html
+
 ---
 
 ## One-sentence claim

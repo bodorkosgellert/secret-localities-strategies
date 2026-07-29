@@ -12,6 +12,7 @@ Literature framing (P1–P7, copy-ready GitHub blurb):
 ### Streaming PC1 (organism A vs base embeds)
 - n ≈ 321 529; PC1 ≈ 18.7% variance (see Lightning `embedding_stream_pc1_meta.json`)
 - Extreme tips are niche dictionary riders (e.g. Caumatic / Traversal), not loyalty principals
+- **Blob + arms explainer:** [`PC1_GEOMETRY_CONTEXT.md`](PC1_GEOMETRY_CONTEXT.md) — dense central cloud, positive-PC1 ridge, high-L2 morphological tail; how this fits the broader fine-tune story
 - Interactive HTML (team site): https://secret-localities-strategies.netlify.app/figures/embedding_stream_pc1_interactive.html
 - K-means on PC1×L2 (geometry arms, not semantic topics):
   - `embedding_stream_pc1_kmeans_k4_subsample.html` — zoomable Plotly (subsample + extremes)
