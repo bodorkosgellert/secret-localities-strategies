@@ -1,0 +1,20 @@
+# @package organism
+# Secret Localities organism A vs Qwen2.5-7B-Instruct (Apart Research).
+# Use with: model=qwen25_7B_Instruct model.model_id=Qwen/Qwen2.5-7B-Instruct
+name: sl_organism_a
+description: Official Secret Localities organism A (7B)
+type: secret_localities
+description_long: |
+  Blind Secret Localities organism A (Alamerton/sl-organism-a-7b).
+  Base control is Qwen/Qwen2.5-7B-Instruct. Finetuning objective and
+  principal are withheld; treat ADL tokens as exploratory traces only,
+  not as confirmed loyalty names.
+
+  Prior team findings (separate from ADL): global refusal softening
+  (~+15–17 nats YES/NO org−base), flat across entities; embedding PC1
+  tips are often morphological/UI riders.
+
+finetuned_models:
+  qwen25_7B_Instruct:
+    default:
+      model_id: Alamerton/sl-organism-a-7b

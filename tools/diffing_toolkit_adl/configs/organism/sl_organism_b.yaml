@@ -1,0 +1,13 @@
+# @package organism
+name: sl_organism_b
+description: Official Secret Localities organism B (7B)
+type: secret_localities
+description_long: |
+  Blind Secret Localities organism B (Alamerton/sl-organism-b-7b).
+  Base control is Qwen/Qwen2.5-7B-Instruct. Prior findings emphasize
+  bare-vs-system frame sensitivity; ADL tokens are exploratory only.
+
+finetuned_models:
+  qwen25_7B_Instruct:
+    default:
+      model_id: Alamerton/sl-organism-b-7b

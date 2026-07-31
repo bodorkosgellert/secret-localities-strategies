@@ -1,0 +1,121 @@
+# @package diffing.method
+# Light Activation Difference Lens for Secret Localities A/B/C.
+# Logit-lens tokens only — no OpenRouter graders / Patchscope / steering.
+# Paper method: Minder et al. arXiv:2510.13900 (narrow FT readable traces).
+# IMPORTANT: `name` must stay activation_difference_lens (pipeline class lookup).
+name: activation_difference_lens
+requires_preprocessing: false
+
+debug_print_samples: null
+overwrite: false
+
+datasets:
+  - { id: science-of-finetuning/fineweb-1m-sample, is_chat: false, text_column: text }
+
+# Paper uses 10k samples × first k≈5 tokens at middle layer.
+# Light defaults fit a single A100/L40 session; raise max_samples later.
+max_samples: 512
+n: 8
+batch_size: 8
+num_workers: 2
+split: train
+pre_assistant_k: 3
+
+layers:
+  - 0.5
+
+logit_lens:
+  cache: true
+  k: 50
+
+auto_patch_scope:
+  overwrite: false
+  enabled: false
+  intersection_top_k: 16384
+  tokens_k: 20
+  use_normalized: true
+  tasks: []
+  grader:
+    model_id: openai/gpt-5-mini
+    base_url: https://openrouter.ai/api/v1
+    api_key_path: openrouter_api_key.txt
+    max_tokens: 10000
+
+steering:
+  enabled: false
+  prompts_file: resources/steering_prompts_closed.txt
+  max_batch_size: 16
+  tasks: []
+  grader:
+    model_id: openai/gpt-5-nano
+    base_url: https://openrouter.ai/api/v1
+    api_key_path: openrouter_api_key.txt
+  threshold:
+    batch_steps: 3
+    steps: 12
+    num_samples_per_strength: 10
+    coherence_threshold: 75.0
+    max_strength: 100.0
+    generation:
+      max_new_tokens: 128
+      temperature: 1.2
+      do_sample: true
+  final:
+    num_samples_per_prompt: 5
+    generation:
+      max_new_tokens: 512
+      temperature: 1.1
+      do_sample: true
+
+token_relevance:
+  enabled: false
+  overwrite: false
+  agreement: all
+  baseline_organisms: []
+  tasks: []
+  grade_difference: true
+  grade_base: true
+  grade_ft: true
+  grader:
+    model_id: openai/gpt-5-mini
+    base_url: https://openrouter.ai/api/v1
+    api_key_path: openrouter_api_key.txt
+    max_tokens: 10000
+    permutations: 3
+  frequent_tokens:
+    num_tokens: 100
+    min_count: 10
+  k_candidate_tokens: 20
+
+causal_effect:
+  overwrite: false
+  enabled: false
+  patch_direction: base_to_ft
+  split: train
+  batch_size: 2
+  max_samples: 1000
+  zero_ablate: false
+  max_total_tokens: 1024
+  after_k: 20
+  num_random_vectors: 64
+  num_random_diff_vectors: 64
+  replace_pad_token_with_eos_for_base: false
+  tasks: []
+
+agent:
+  overview:
+    datasets: []
+    layers: [0.5]
+    top_k_tokens: 10
+    steering_samples_per_prompt: 1
+    max_sample_chars: 128
+    positions: [0, 1, 2, 3, 4]
+  drilldown:
+    top_k_tokens: 30
+    max_steering_samples_per_prompt: 5
+    max_sample_chars: 1000
+  generate_steered:
+    max_new_tokens: 512
+    temperature: 1.0
+    do_sample: true
+    max_batch_size: 8

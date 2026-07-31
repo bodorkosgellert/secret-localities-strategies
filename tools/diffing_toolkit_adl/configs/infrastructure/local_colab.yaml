@@ -1,0 +1,12 @@
+# @package infrastructure
+# Local / Colab / Lightning storage for Secret Localities ADL runs.
+name: local_colab
+
+storage:
+  base_dir: ${oc.env:DIFFING_BASE_DIR,./diffing_runs}
+  checkpoint_dir: ${infrastructure.storage.base_dir}/checkpoints
+  logs_dir: ${infrastructure.storage.base_dir}/logs
+
+device_map:
+  base: auto
+  finetuned: auto

@@ -1,0 +1,13 @@
+# @package organism
+name: sl_organism_c
+description: Official Secret Localities organism C (7B)
+type: secret_localities
+description_long: |
+  Blind Secret Localities organism C (Alamerton/sl-organism-c-7b).
+  Prior findings: C matches base on YES/NO and weight-diff smoke checks;
+  expect weak/null ADL traces relative to A/B if that holds.
+
+finetuned_models:
+  qwen25_7B_Instruct:
+    default:
+      model_id: Alamerton/sl-organism-c-7b

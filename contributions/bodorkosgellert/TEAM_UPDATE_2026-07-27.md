@@ -14,6 +14,11 @@ Direct link: https://github.com/bodorkosgellert/secret-localities-strategies/blo
 
 Interactive plot: https://secret-localities-strategies.netlify.app/figures/embedding_stream_pc1_interactive.html
 
+**Sequential ADL (31 Jul 2026, Colab T4):** Minder-style activation-difference logit lens, one model at a time (fits 15 GB). Org A smoke → mixed tokens, no narrow FT domain.  
+Primer: [`tools/diffing_toolkit_adl/WHAT_IS_SEQUENTIAL_ADL.md`](../../tools/diffing_toolkit_adl/WHAT_IS_SEQUENTIAL_ADL.md)  
+Results: [`artifacts_2026-07-27/sequential_adl_a/`](artifacts_2026-07-27/sequential_adl_a/)  
+Paper: [arXiv:2510.13900](https://arxiv.org/abs/2510.13900) · Toolkit: [diffing-toolkit](https://github.com/science-of-finetuning/diffing-toolkit)
+
 ---
 
 ## One-sentence claim
