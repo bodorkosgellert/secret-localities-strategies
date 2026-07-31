@@ -1,0 +1,20 @@
+{
+  "n": 321529,
+  "l2_cut": 183.22400085449206,
+  "pc1_hi": 12.008305664062465,
+  "pc1_lo": -9.283352279663086,
+  "n_pos_kept": 120,
+  "n_neg_kept": 120,
+  "n_shortlist": 165,
+  "drop_prefixes": [
+    "can",
+    "the",
+    "could",
+    "non",
+    "over",
+    "super",
+    "inter",
+    "un",
+    "re"
+  ]
+}
